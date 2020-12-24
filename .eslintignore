@@ -1,0 +1,5 @@
+# dist
+dist/*
+
+# dependencies & third-parties
+node_modules/*
