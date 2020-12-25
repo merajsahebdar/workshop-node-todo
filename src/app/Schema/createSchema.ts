@@ -1,6 +1,8 @@
 import {ContainerType, buildSchema} from 'type-graphql';
 import {GraphQLSchema} from 'graphql';
 
+import TodoResolver from './Resolver/TodoResolver';
+
 // Schema Options
 type SchemaOptions = {
   container?: ContainerType;
@@ -10,12 +12,13 @@ type SchemaOptions = {
  * Create Schema
  *
  * @returns {Promise<graphql.GraphQLSchema>}
- * @memberof Schema
+ * @memberof App/Schema
  */
 async function createSchema(options: SchemaOptions = {}): Promise<GraphQLSchema> {
   return await buildSchema({
-    resolvers: [],
+    resolvers: [TodoResolver],
     container: options.container,
+    validate: false,
   });
 }
 

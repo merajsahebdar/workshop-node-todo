@@ -1,10 +1,11 @@
 import 'reflect-metadata';
 import {Container} from 'typedi';
-import {createConnection, useContainer} from 'typeorm';
+import {createConnection, useContainer as ormUseContainer} from 'typeorm';
 import {SnakeNamingStrategy} from 'typeorm-naming-strategies';
 
 import createServer from './Http/Express/createServer';
 import createSchema from './Schema/createSchema';
+import entities from './Schema/entities';
 import clear from '../utils/clear';
 import env from '../utils/env';
 import logger from '../utils/logger';
@@ -16,7 +17,7 @@ clear();
 (async () => {
   try {
     // Initialize ORM
-    useContainer(Container);
+    ormUseContainer(Container);
     const ormConnection = await createConnection({
       name: 'default',
       // Should be one of: mysql, postgres
@@ -27,6 +28,10 @@ clear();
       username: env('TYPEORM_USERNAME'),
       password: env('TYPEORM_PASSWORD'),
       namingStrategy: new SnakeNamingStrategy(),
+      extra: {
+        charset: 'utf8mb4_unicode_ci',
+      },
+      entities,
     });
 
     // Initiate GraphQL Schema
@@ -47,6 +52,7 @@ clear();
       });
     });
   } catch (error) {
+    console.log(error);
     logger.error(error.message);
   }
 })();

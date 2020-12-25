@@ -10,7 +10,7 @@ import type {ServerConfig, Server} from '../types';
  *
  * @param {ServerConfig} config
  * @returns {Server}
- * @memberof Http/Express
+ * @memberof App/Http/Express
  */
 function createServer({schema}: ServerConfig): Promise<Server> {
   return new Promise(resolve => {

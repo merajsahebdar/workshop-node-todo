@@ -1,7 +1,7 @@
 /**
  * Env
  *
- * @memberof Utility
+ * @memberof Utils
  */
 function env(name: string, defaultValue?: string): string {
   const value = process.env[name] ?? defaultValue;
