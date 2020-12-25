@@ -1,0 +1,17 @@
+## Requirements
+
+Node.JS >= 15.0.0 MySQL >= 8.0.0
+
+## Environment Varianles
+
+```
+APP_PORT
+TYPEORM_CONNECTION
+TYPEORM_HOST
+TYPEORM_PORT
+TYPEORM_USERNAME
+TYPEORM_PASSWORD
+TYPEORM_DATABASE
+TYPEORM_ENTITIES=src/app/Schema/entities.ts
+TYPEORM_MIGRATIONS=src/app/Schema/Migration/*.ts
+```
