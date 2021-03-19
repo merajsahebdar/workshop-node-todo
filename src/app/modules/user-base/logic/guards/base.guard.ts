@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import memoize from 'lodash.memoize';
 import { IAppRequest } from 'src/interfaces/app-request.interface';
+import { getRequest } from 'src/utils/get-request.util';
 import { IAuthJwtPayload } from '../../interfaces/auth-jwt-payload';
 import { UserService } from '../services/user.service';
 import { IStrategy } from '../strategies/base.strategy';
@@ -100,7 +101,7 @@ function createBaseGuard(StrategyClass: {
      * @returns
      */
     getRequest(context: ExecutionContext): IAppRequest {
-      return context.switchToHttp().getRequest();
+      return getRequest(context);
     }
 
     /**
