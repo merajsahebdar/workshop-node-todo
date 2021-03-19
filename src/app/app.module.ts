@@ -6,12 +6,14 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { appConfig } from './configs/app.config';
 import { jwtConfig } from './configs/jwt.config';
 import { typeormConfig } from './configs/typeorm.config';
+import { UserBaseModule } from './modules/user-base';
 
 /**
  * App Module
  */
 @Module({
   imports: [
+    // Third-party Modules
     // Configuration
     ConfigModule.forRoot({
       load: [appConfig, typeormConfig, jwtConfig],
@@ -42,6 +44,9 @@ import { typeormConfig } from './configs/typeorm.config';
         autoSchemaFile: true,
       }),
     }),
+    // Application Modules
+    // User Base
+    UserBaseModule,
   ],
 })
 export class AppModule {}
