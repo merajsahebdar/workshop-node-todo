@@ -1,7 +1,9 @@
+import { UseGuards } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
 import { EntityNotFoundError } from 'typeorm';
+import { GraphQLJwtGuard } from '../../logic/guards/jwt.guard';
 import { GetUserQuery } from '../../logic/queries/get-user.query';
 import { UserType } from '../types/user.type';
 
@@ -24,6 +26,7 @@ export class UserResolver {
    * @returns
    */
   @Query(() => UserType)
+  @UseGuards(GraphQLJwtGuard)
   async user(@Args('id') id: string): Promise<UserType> {
     try {
       return await this.queryBus.execute(new GetUserQuery(id));

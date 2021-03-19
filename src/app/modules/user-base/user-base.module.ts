@@ -9,6 +9,7 @@ import { SignInCommandHandler } from './logic/handlers/sign-in.command.handler';
 import { SignUpCommandHandler } from './logic/handlers/sign-up.command.handler';
 import { JwtService } from './logic/services/jwt.service';
 import { UserService } from './logic/services/user.service';
+import { JwtStrategy } from './logic/strategies/jwt.strategy';
 
 /**
  * User Base Module
@@ -18,6 +19,7 @@ import { UserService } from './logic/services/user.service';
   providers: [
     UserService,
     JwtService,
+    JwtStrategy,
     GetUserQueryHandler,
     SignInCommandHandler,
     SignUpCommandHandler,
