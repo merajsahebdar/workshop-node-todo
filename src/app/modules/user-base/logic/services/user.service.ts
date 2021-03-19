@@ -4,7 +4,6 @@ import { AppInputError } from 'src/errors/app-input.error';
 import { isUniqueConstraintError } from 'src/utils/is-unique-constraint-error.util';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UsersRepository } from '../../database/repositories/users.repository';
-import { IAuthPayloadType } from '../../interfaces/auth-payload.type';
 import { ISignInInput } from '../../interfaces/sign-in.input';
 import { ISignUpInput } from '../../interfaces/sign-up.input';
 import { JwtService } from './jwt.service';
@@ -54,17 +53,14 @@ export class UserService {
    * @throws {AppInputError} in case of providing a wrong password.
    * @returns
    */
-  async signIn(input: ISignInInput): Promise<IAuthPayloadType> {
+  async signIn(input: ISignInInput): Promise<string> {
     const user = await this.findByEmail(input.email);
 
     if (!(await user.comparePassword(input.password))) {
       throw new AppInputError();
     }
 
-    return {
-      user,
-      token: this.signToken(user),
-    };
+    return this.signToken(user);
   }
 
   /**
@@ -74,7 +70,7 @@ export class UserService {
    * @throws {AppInputError} in case of the provided email exists.
    * @returns
    */
-  async signUp(input: ISignUpInput): Promise<IAuthPayloadType> {
+  async signUp(input: ISignUpInput): Promise<string> {
     try {
       const user = await this.users.save(
         this.users.create({
@@ -85,10 +81,7 @@ export class UserService {
         }),
       );
 
-      return {
-        user,
-        token: this.signToken(user),
-      };
+      return this.signToken(user);
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         throw new AppInputError();
@@ -105,6 +98,6 @@ export class UserService {
    * @returns
    */
   private signToken(user: UserEntity): string {
-    return this.jwtService.signToken({ uid: user.id });
+    return this.jwtService.signToken({ uid: user.id, sub: user.toPlain() });
   }
 }

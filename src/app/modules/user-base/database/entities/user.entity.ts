@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs';
+import { classToPlain, Exclude } from 'class-transformer';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -10,19 +11,21 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
+import { IUnsafeUserType, IUserType } from '../../interfaces/user.type';
 
 /**
  * User Entity
  */
 @Entity('users')
 @Unique('UQ_EMAIL', ['email'])
-export class UserEntity {
+export class UserEntity implements IUnsafeUserType {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('varchar')
   email: string;
 
+  @Exclude({ toPlainOnly: true })
   @Column('varchar')
   password: string;
 
@@ -43,6 +46,14 @@ export class UserEntity {
 
   @DeleteDateColumn({ type: 'timestamp with time zone' })
   removedAt: string;
+
+  /**
+   * Convert the instance to a plain object.
+   * @returns
+   */
+  toPlain(): IUserType {
+    return classToPlain(this) as IUserType;
+  }
 
   /**
    * Compare Password

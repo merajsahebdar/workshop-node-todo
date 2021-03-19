@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { IAuthPayloadType } from '../../interfaces/auth-payload.type';
 import { SignInCommand } from '../commands/sign-in.command';
 import { UserService } from '../services/user.service';
 
@@ -21,7 +20,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
    * @param {SignInCommand} command
    * @returns
    */
-  async execute(command: SignInCommand): Promise<IAuthPayloadType> {
+  async execute(command: SignInCommand): Promise<string> {
     return this.userService.signIn(command.input);
   }
 }

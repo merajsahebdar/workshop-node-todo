@@ -7,7 +7,6 @@ import { SignInCommand } from '../../logic/commands/sign-in.command';
 import { SignUpCommand } from '../../logic/commands/sign-up.command';
 import { SignInInput } from '../inputs/sign-in.input';
 import { SignUpInput } from '../inputs/sign-up.input';
-import { AuthPayloadType } from '../types/auth-payload.type';
 
 /**
  * Auth Resolver
@@ -25,8 +24,8 @@ export class AuthResolver {
    * @param {SignInInput} input
    * @returns
    */
-  @Mutation(() => AuthPayloadType)
-  async signIn(@Args('input') input: SignInInput): Promise<AuthPayloadType> {
+  @Mutation(() => String)
+  async signIn(@Args('input') input: SignInInput): Promise<string> {
     try {
       return await this.commandBus.execute(new SignInCommand(input));
     } catch (error) {
@@ -49,8 +48,8 @@ export class AuthResolver {
    * @param {SignUpInput} input
    * @returns
    */
-  @Mutation(() => AuthPayloadType)
-  async signUp(@Args('input') input: SignUpInput): Promise<AuthPayloadType> {
+  @Mutation(() => String)
+  async signUp(@Args('input') input: SignUpInput): Promise<string> {
     try {
       return await this.commandBus.execute(new SignUpCommand(input));
     } catch (error) {
