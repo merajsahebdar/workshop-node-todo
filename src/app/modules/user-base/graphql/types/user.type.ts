@@ -27,6 +27,6 @@ export class UserType implements IUserType {
   @Field(() => GraphQLISODateTime)
   updatedAt: string;
 
-  @Field(() => GraphQLISODateTime)
-  removedAt: string;
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  removedAt?: string;
 }

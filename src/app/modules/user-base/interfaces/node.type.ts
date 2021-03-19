@@ -5,5 +5,5 @@ export interface INodeType {
   id: string;
   createdAt: string;
   updatedAt: string;
-  removedAt: string;
+  removedAt?: string;
 }
