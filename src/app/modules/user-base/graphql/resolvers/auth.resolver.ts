@@ -1,8 +1,8 @@
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
-import { AppInputError } from 'src/errors/app-input.error';
 import { EntityNotFoundError } from 'typeorm';
+import { AppInputError } from '../../../../../errors/app-input.error';
 import { SignInCommand } from '../../logic/commands/sign-in.command';
 import { SignUpCommand } from '../../logic/commands/sign-up.command';
 import { SignInInput } from '../inputs/sign-in.input';
