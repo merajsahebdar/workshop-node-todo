@@ -37,12 +37,17 @@ import { UserBaseModule } from './modules/user-base';
     // GraphQL
     GraphQLModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        playground:
-          configService.get('app.env', 'development') === 'development',
-        path: '/',
-        autoSchemaFile: true,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isDevelopment =
+          configService.get('app.env', 'development') === 'development';
+
+        return {
+          playground: isDevelopment,
+          path: '/',
+          autoSchemaFile: true,
+          tracing: isDevelopment,
+        };
+      },
     }),
     // Application Modules
     // User Base
