@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AppInputError } from 'src/errors/app-input.error';
-import { isUniqueConstraintError } from 'src/utils/is-unique-constraint-error.util';
+import { AppInputError } from '../../../../../errors/app-input.error';
+import { isUniqueConstraintError } from '../../../../../utils/is-unique-constraint-error.util';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UsersRepository } from '../../database/repositories/users.repository';
 import { ISignInInput } from '../../interfaces/sign-in.input';

@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { AppInputError } from 'src/errors/app-input.error';
-import { IAppRequest } from 'src/interfaces/app-request.interface';
-import { Nullable } from 'src/types';
+import { AppInputError } from '../../../../../errors/app-input.error';
+import { IAppRequest } from '../../../../../interfaces/app-request.interface';
+import { Nullable } from '../../../../../types';
 import { IAuthJwtPayload } from '../../interfaces/auth-jwt-payload';
 import { JwtService } from '../services/jwt.service';
 import { BaseStrategy, IStrategy } from './base.strategy';

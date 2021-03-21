@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { getRequest } from 'src/utils/get-request.util';
+import { getRequest } from '../../../../../utils/get-request.util';
 import { UserEntity } from '../../database/entities/user.entity';
 import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../guards/base.guard';
 
