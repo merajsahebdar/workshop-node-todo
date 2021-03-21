@@ -1,5 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail, Length } from 'class-validator';
+import { MatchWith } from '../../../../../validators/match-with.validator';
 import { ISignUpInput } from '../../interfaces/sign-up.input';
 
 /**
@@ -8,7 +9,7 @@ import { ISignUpInput } from '../../interfaces/sign-up.input';
 @InputType()
 export class SignUpInput implements ISignUpInput {
   @Field()
-  @IsEmail({}, { message: 'The email address is not valid.' })
+  @IsEmail(undefined, { message: 'The email address is not valid.' })
   readonly email: string;
 
   @Field()
@@ -16,4 +17,10 @@ export class SignUpInput implements ISignUpInput {
     message: 'The password must contains at least 8 characters.',
   })
   readonly password: string;
+
+  @Field()
+  @MatchWith('password', {
+    message: 'Provided passwords must match.',
+  })
+  readonly passwordConfirm: string;
 }
