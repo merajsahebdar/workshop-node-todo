@@ -1,8 +1,10 @@
+import { UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
 import { EntityNotFoundError } from 'typeorm';
 import { AppInputError } from '../../../../../errors/app-input.error';
+import { GqlValidationPipe } from '../../../../../pipes/gql-validation.pipe';
 import { SignInCommand } from '../../logic/commands/sign-in.command';
 import { SignUpCommand } from '../../logic/commands/sign-up.command';
 import { SignInInput } from '../inputs/sign-in.input';
@@ -12,6 +14,7 @@ import { SignUpInput } from '../inputs/sign-up.input';
  * Auth Resolver
  */
 @Resolver()
+@UsePipes(new GqlValidationPipe())
 export class AuthResolver {
   /**
    * Constructor
