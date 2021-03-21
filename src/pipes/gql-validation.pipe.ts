@@ -14,7 +14,7 @@ export class GqlValidationPipe extends ValidationPipe {
     super({
       ...options,
       exceptionFactory: (errors) => {
-        return new UserInputError('The provided inputs are not valid.', {
+        return new UserInputError('Provided inputs are not valid.', {
           invalidArgs: errors.map((error) => ({
             property: error.property,
             constraints: error.constraints,
