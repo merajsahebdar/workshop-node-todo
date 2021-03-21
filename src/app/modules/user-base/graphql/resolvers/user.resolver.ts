@@ -2,7 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
-import { EntityNotFoundError } from 'typeorm';
+import { AppInputError } from '../../../../../errors/app-input.error';
 import { JwtGuard } from '../../logic/guards/jwt.guard';
 import { GetUserQuery } from '../../logic/queries/get-user.query';
 import { UserType } from '../types/user.type';
@@ -31,8 +31,8 @@ export class UserResolver {
     try {
       return await this.queryBus.execute(new GetUserQuery(id));
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new UserInputError(`No user found with id: ${id}`);
+      if (error instanceof AppInputError) {
+        throw new UserInputError(error.message);
       }
 
       throw error;

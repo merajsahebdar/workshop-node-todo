@@ -2,7 +2,6 @@ import { UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
-import { EntityNotFoundError } from 'typeorm';
 import { AppInputError } from '../../../../../errors/app-input.error';
 import { GqlValidationPipe } from '../../../../../pipes/gql-validation.pipe';
 import { SignInCommand } from '../../logic/commands/sign-in.command';
@@ -32,13 +31,8 @@ export class AuthResolver {
     try {
       return await this.commandBus.execute(new SignInCommand(input));
     } catch (error) {
-      if (
-        error instanceof AppInputError ||
-        error instanceof EntityNotFoundError
-      ) {
-        throw new UserInputError(
-          'The provided email (or password) is not correct.',
-        );
+      if (error instanceof AppInputError) {
+        throw new UserInputError(error.message);
       } else {
         throw error;
       }
@@ -57,7 +51,7 @@ export class AuthResolver {
       return await this.commandBus.execute(new SignUpCommand(input));
     } catch (error) {
       if (error instanceof AppInputError) {
-        throw new UserInputError('The provided inputs are not valid.');
+        throw new UserInputError(error.message);
       } else {
         throw error;
       }
