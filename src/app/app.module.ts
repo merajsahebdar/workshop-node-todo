@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { IsUniqueConstraint } from '../validators/is-unique.validator';
 import { appConfig } from './configs/app.config';
 import { jwtConfig } from './configs/jwt.config';
 import { typeormConfig } from './configs/typeorm.config';
@@ -53,5 +54,6 @@ import { UserBaseModule } from './modules/user-base';
     // User Base
     UserBaseModule,
   ],
+  providers: [IsUniqueConstraint],
 })
 export class AppModule {}
