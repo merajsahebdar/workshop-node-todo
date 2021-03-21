@@ -57,9 +57,7 @@ export class AuthResolver {
       return await this.commandBus.execute(new SignUpCommand(input));
     } catch (error) {
       if (error instanceof AppInputError) {
-        throw new UserInputError(
-          'The provided email address is already in use.',
-        );
+        throw new UserInputError('The provided inputs are not valid.');
       } else {
         throw error;
       }
