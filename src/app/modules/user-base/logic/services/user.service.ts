@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FindConditions } from 'typeorm';
 import { AppInputError } from '../../../../../errors/app-input.error';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UsersRepository } from '../../database/repositories/users.repository';
@@ -21,6 +22,16 @@ export class UserService {
     @InjectRepository(UserEntity) private users: UsersRepository,
     private jwtService: JwtService,
   ) {}
+
+  /**
+   * Check whether is any user exists with given conditions or not.
+   *
+   * @param {FindConditions<UserEntity>} conditions
+   * @returns
+   */
+  async exists(conditions: FindConditions<UserEntity>): Promise<boolean> {
+    return (await this.users.count({ where: conditions })) <= 0;
+  }
 
   /**
    * Find a user using the provided id.

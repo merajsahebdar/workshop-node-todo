@@ -7,6 +7,7 @@ import { UserResolver } from './graphql/resolvers/user.resolver';
 import { GetUserQueryHandler } from './logic/handlers/get-user.query.handler';
 import { SignInCommandHandler } from './logic/handlers/sign-in.command.handler';
 import { SignUpCommandHandler } from './logic/handlers/sign-up.command.handler';
+import { UserEmailAvailabilityCheckCommandHandler } from './logic/handlers/user-email-availability-check.handler';
 import { JwtService } from './logic/services/jwt.service';
 import { UserService } from './logic/services/user.service';
 import { JwtStrategy } from './logic/strategies/jwt.strategy';
@@ -21,6 +22,7 @@ import { JwtStrategy } from './logic/strategies/jwt.strategy';
     JwtService,
     JwtStrategy,
     GetUserQueryHandler,
+    UserEmailAvailabilityCheckCommandHandler,
     SignInCommandHandler,
     SignUpCommandHandler,
     UserResolver,
