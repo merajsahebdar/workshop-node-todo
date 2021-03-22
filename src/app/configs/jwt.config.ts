@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { rootDir } from '../../constants/root-dir.constant';
+import { rootDir } from '../constants/root-dir.constant';
 
 /**
  * JWT Config

@@ -1,8 +1,8 @@
 import { Type, mixin } from '@nestjs/common';
 import memoize from 'lodash.memoize';
-import { IAppRequest } from '../../../../../interfaces/app-request.interface';
-import { Nullable } from '../../../../../types';
-import { IAuthJwtPayload } from '../../interfaces/auth-jwt-payload';
+import { IAppRequest } from '../../../../interfaces/app-request.interface';
+import { Nullable } from '../../../../types';
+import { IAuthJwtPayload } from '../../typing/interfaces/auth-jwt-payload';
 
 /**
  * Strategy Interface

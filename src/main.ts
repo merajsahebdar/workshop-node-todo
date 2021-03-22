@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app';
-import { ApolloErrorFilter } from './filters/apollo-error.filter';
+import { ApolloErrorFilter } from './app/filters/apollo-error.filter';
 
 /**
  * Bootstrap

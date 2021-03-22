@@ -1,4 +1,4 @@
-import { IUserEmailAvailabilityCheckInput } from '../../interfaces/user-email-availability-check.input';
+import { IUserEmailAvailabilityCheckInput } from '../../typing/interfaces/user-email-availability-check.input';
 
 /**
  * User Email Availability Check Command

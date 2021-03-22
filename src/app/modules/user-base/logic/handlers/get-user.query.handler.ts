@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { IUserType } from '../../interfaces/user.type';
+import { IUserType } from '../../typing/interfaces/user.type';
 import { GetUserQuery } from '../queries/get-user.query';
 import { UserService } from '../services/user.service';
 

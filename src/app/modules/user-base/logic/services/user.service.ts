@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions } from 'typeorm';
-import { AppInputError } from '../../../../../errors/app-input.error';
+import { AppInputError } from '../../../../errors/app-input.error';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UsersRepository } from '../../database/repositories/users.repository';
-import { ISignInInput } from '../../interfaces/sign-in.input';
-import { ISignUpInput } from '../../interfaces/sign-up.input';
+import { ISignInInput } from '../../typing/interfaces/sign-in.input';
+import { ISignUpInput } from '../../typing/interfaces/sign-up.input';
 import { JwtService } from './jwt.service';
 
 /**

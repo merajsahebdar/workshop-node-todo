@@ -1,4 +1,4 @@
-import { ISignInInput } from '../../interfaces/sign-in.input';
+import { ISignInInput } from '../../typing/interfaces/sign-in.input';
 
 /**
  * Sign In Command

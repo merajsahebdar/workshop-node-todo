@@ -1,5 +1,5 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
-import { IUserType } from '../../interfaces/user.type';
+import { IUserType } from '../../typing/interfaces/user.type';
 
 /**
  * User Type
