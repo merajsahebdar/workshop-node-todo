@@ -1,9 +1,10 @@
+import { ICommand } from '@nestjs/cqrs';
 import { IUserEmailAvailabilityCheckInput } from '../../typing/interfaces/user-email-availability-check.input';
 
 /**
  * User Email Availability Check Command
  */
-export class UserEmailAvailabilityCheckCommand {
+export class UserEmailAvailabilityCheckCommand implements ICommand {
   /**
    * Constructor
    *

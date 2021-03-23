@@ -21,6 +21,8 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
    * @returns
    */
   async execute(command: SignInCommand): Promise<string> {
-    return this.userService.signIn(command.input);
+    const [, token] = await this.userService.signIn(command.input);
+
+    return token;
   }
 }

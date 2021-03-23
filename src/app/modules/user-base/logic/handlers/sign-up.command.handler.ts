@@ -1,5 +1,6 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { SignUpCommand } from '../commands/sign-up.command';
+import { UserSignedUpEvent } from '../events/user-signed-up.event';
 import { UserService } from '../services/user.service';
 
 /**
@@ -10,9 +11,10 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
   /**
    * Constructor
    *
+   * @param {EventBus} eventBus
    * @param {UserService} userService
    */
-  constructor(private userService: UserService) {}
+  constructor(private eventBus: EventBus, private userService: UserService) {}
 
   /**
    * Execute
@@ -21,6 +23,10 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
    * @returns
    */
   async execute(command: SignUpCommand): Promise<string> {
-    return this.userService.signUp(command.input);
+    const [user, token] = await this.userService.signUp(command.input);
+
+    this.eventBus.publish(new UserSignedUpEvent(user));
+
+    return token;
   }
 }

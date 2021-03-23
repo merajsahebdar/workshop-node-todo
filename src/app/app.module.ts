@@ -8,6 +8,11 @@ import { appConfig } from './configs/app.config';
 import { jwtConfig } from './configs/jwt.config';
 import { typeormConfig } from './configs/typeorm.config';
 import { UserBaseModule } from './modules/user-base';
+import { BullModule } from '@nestjs/bull';
+import { redisConfig } from './configs/redis.config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { mailerConfig } from './configs/mailer.config';
 
 /**
  * App Module
@@ -17,8 +22,31 @@ import { UserBaseModule } from './modules/user-base';
     // Third-party Modules
     // Configuration
     ConfigModule.forRoot({
-      load: [appConfig, typeormConfig, jwtConfig],
+      load: [appConfig, redisConfig, mailerConfig, typeormConfig, jwtConfig],
       isGlobal: true,
+    }),
+    // Queue
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('queue.host'),
+          port: configService.get('queue.port'),
+        },
+      }),
+    }),
+    // Mailer
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: configService.get('mailer.transport'),
+        defaults: {
+          from: configService.get('mailer.defaults.from'),
+        },
+        template: {
+          adapter: new PugAdapter(),
+        },
+      }),
     }),
     // Database
     TypeOrmModule.forRootAsync({

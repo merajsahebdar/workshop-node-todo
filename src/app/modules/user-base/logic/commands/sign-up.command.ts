@@ -1,9 +1,10 @@
+import { ICommand } from '@nestjs/cqrs';
 import { ISignUpInput } from '../../typing/interfaces/sign-up.input';
 
 /**
  * Sign Up Command
  */
-export class SignUpCommand {
+export class SignUpCommand implements ICommand {
   /**
    * Constructor
    *

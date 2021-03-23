@@ -79,14 +79,14 @@ export class UserService {
    * @throws {AppInputError} in case of providing a wrong password.
    * @returns
    */
-  async signIn(input: ISignInInput): Promise<string> {
+  async signIn(input: ISignInInput): Promise<[UserEntity, string]> {
     const user = await this.findByEmail(input.email);
 
     if (!(await user.comparePassword(input.password))) {
       throw new AppInputError('The provided password is not correct.');
     }
 
-    return this.signToken(user);
+    return [user, this.signToken(user)];
   }
 
   /**
@@ -95,7 +95,7 @@ export class UserService {
    * @param {ISignUpInput} input
    * @returns
    */
-  async signUp(input: ISignUpInput): Promise<string> {
+  async signUp(input: ISignUpInput): Promise<[UserEntity, string]> {
     const user = await this.users.save(
       this.users.create({
         ...input,
@@ -105,7 +105,7 @@ export class UserService {
       }),
     );
 
-    return this.signToken(user);
+    return [user, this.signToken(user)];
   }
 
   /**
@@ -116,5 +116,16 @@ export class UserService {
    */
   private signToken(user: UserEntity): string {
     return this.jwtService.signToken({ uid: user.id, sub: user.toPlain() });
+  }
+
+  /**
+   * Toggle Verification
+   *
+   * @param {UserEntity} user
+   * @return
+   */
+  async toggleVerification(user: UserEntity): Promise<void> {
+    user.isVerified = !user.isVerified;
+    await this.users.save(user);
   }
 }

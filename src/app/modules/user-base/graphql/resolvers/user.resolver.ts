@@ -6,9 +6,11 @@ import { GraphQLBoolean } from 'graphql';
 import { AppInputError } from '../../../../errors/app-input.error';
 import { GqlValidationPipe } from '../../../../pipes/gql-validation.pipe';
 import { UserEmailAvailabilityCheckCommand } from '../../logic/commands/user-email-availability-check.command';
+import { VerifyUserCommand } from '../../logic/commands/verify-user.command';
 import { JwtGuard } from '../../logic/guards/jwt.guard';
 import { GetUserQuery } from '../../logic/queries/get-user.query';
 import { UserEmailAvailabilityCheckInput } from '../inputs/user-email-availability-check.input';
+import { VerifyUserInput } from '../inputs/verify-user.input';
 import { UserType } from '../types/user.type';
 
 /**
@@ -39,6 +41,26 @@ export class UserResolver {
     return this.commandBus.execute(
       new UserEmailAvailabilityCheckCommand(input),
     );
+  }
+
+  /**
+   * Verify User
+   *
+   * @param {VerifyUserInput} input
+   * @returns
+   */
+  @Mutation(() => GraphQLBoolean)
+  @UseGuards(JwtGuard)
+  async verifyUser(@Args('input') input: VerifyUserInput): Promise<boolean> {
+    try {
+      return await this.commandBus.execute(new VerifyUserCommand(input));
+    } catch (error) {
+      if (error instanceof AppInputError) {
+        throw new UserInputError(error.message);
+      }
+
+      throw error;
+    }
   }
 
   /**
