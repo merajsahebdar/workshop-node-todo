@@ -5,9 +5,13 @@ import { UserInputError } from 'apollo-server-core';
 import { GraphQLBoolean } from 'graphql';
 import { AppInputError } from '../../../../errors/app-input.error';
 import { GqlValidationPipe } from '../../../../pipes/gql-validation.pipe';
+import { UserPolicyAction } from '../../access-control/actions/user-policy.action';
+import { UserPolicyBuilder } from '../../access-control/policy-builders/user.policy-builder';
+import { UserEntity } from '../../database/entities/user.entity';
 import { UserEmailAvailabilityCheckCommand } from '../../logic/commands/user-email-availability-check.command';
 import { VerifyUserCommand } from '../../logic/commands/verify-user.command';
 import { JwtGuard } from '../../logic/guards/jwt.guard';
+import { PolicyGuard } from '../../logic/guards/policy.guard';
 import { GetUserQuery } from '../../logic/queries/get-user.query';
 import { UserEmailAvailabilityCheckInput } from '../inputs/user-email-availability-check.input';
 import { VerifyUserInput } from '../inputs/verify-user.input';
@@ -70,7 +74,12 @@ export class UserResolver {
    * @returns
    */
   @Query(() => UserType)
-  @UseGuards(JwtGuard)
+  @UseGuards(
+    JwtGuard,
+    PolicyGuard(UserPolicyBuilder, ({ can, args: { id } }) => {
+      can(UserPolicyAction.READ, ['typeorm', UserEntity, { id }]);
+    }),
+  )
   async user(@Args('id') id: string): Promise<UserType> {
     try {
       return await this.queryBus.execute(new GetUserQuery(id));

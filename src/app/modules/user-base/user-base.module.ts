@@ -2,9 +2,11 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserPolicyBuilder } from './access-control/policy-builders/user.policy-builder';
 import { UserEntity } from './database/entities/user.entity';
 import { AuthResolver } from './graphql/resolvers/auth.resolver';
 import { UserResolver } from './graphql/resolvers/user.resolver';
+import { Policy } from './logic/factories/policy.factory';
 import { GetUserQueryHandler } from './logic/handlers/get-user.query.handler';
 import { SendUserVerificationEmailCommandHandler } from './logic/handlers/send-user-verification-email.command.handler';
 import { SignInCommandHandler } from './logic/handlers/sign-in.command.handler';
@@ -35,6 +37,8 @@ import { JwtStrategy } from './logic/strategies/jwt.strategy';
     JwtService,
     HashService,
     JwtStrategy,
+    Policy,
+    UserPolicyBuilder,
     GetUserQueryHandler,
     UserEmailAvailabilityCheckCommandHandler,
     SignInCommandHandler,
