@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcryptjs';
 import { classToPlain, Exclude } from 'class-transformer';
 import {
+  AfterLoad,
   BeforeInsert,
   BeforeUpdate,
   Column,
@@ -28,6 +29,9 @@ export class UserEntity implements IUnsafeUserType {
   @Exclude({ toPlainOnly: true })
   @Column('varchar')
   password: string;
+
+  @Exclude({ toPlainOnly: true })
+  private cachedPassword: string;
 
   @Column('boolean', { nullable: false, default: true })
   isActivated: boolean;
@@ -66,6 +70,14 @@ export class UserEntity implements IUnsafeUserType {
   }
 
   /**
+   * Cache password to avoid rehashing on updates.
+   */
+  @AfterLoad()
+  cachePassword() {
+    this.cachedPassword = this.password;
+  }
+
+  /**
    * Hash password before any update.
    *
    * @returns
@@ -73,7 +85,7 @@ export class UserEntity implements IUnsafeUserType {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
-    if (this.password) {
+    if (this.password && this.cachedPassword !== this.password) {
       this.password = await bcrypt.hash(this.password, await bcrypt.genSalt());
     }
   }
