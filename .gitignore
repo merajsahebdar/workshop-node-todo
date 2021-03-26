@@ -394,6 +394,7 @@ Temporary Items
 
 =======
 # Local
+.eslintcache
 .env
 dist
 storage
