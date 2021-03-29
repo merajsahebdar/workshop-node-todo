@@ -2,17 +2,19 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { IsUniqueConstraint } from './validators/is-unique.validator';
-import { appConfig } from './configs/app.config';
-import { jwtConfig } from './configs/jwt.config';
-import { typeormConfig } from './configs/typeorm.config';
-import { UserBaseModule } from './modules/user-base';
-import { BullModule } from '@nestjs/bull';
-import { redisConfig } from './configs/redis.config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
-import { mailerConfig } from './configs/mailer.config';
+import { BullModule } from '@nestjs/bull';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { IsUniqueConstraint } from './validators';
+import {
+  appConfig,
+  redisConfig,
+  mailerConfig,
+  typeormConfig,
+  jwtConfig,
+} from './configs';
+import { UserBaseModule } from './modules';
 
 /**
  * App Module

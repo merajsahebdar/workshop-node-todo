@@ -1,5 +1,5 @@
 import { IEvent } from '@nestjs/cqrs';
-import { UserEntity } from '../../database/entities/user.entity';
+import { UserEntity } from '../../database';
 
 /**
  * User Signed Up Event

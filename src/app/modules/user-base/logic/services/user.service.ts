@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions } from 'typeorm';
-import { AppInputError } from '../../../../errors/app-input.error';
-import { RefreshTokenEntity } from '../../database/entities/refresh-token.entity';
-import { UserEntity } from '../../database/entities/user.entity';
-import { RefreshTokensRepository } from '../../database/repositories/refresh-tokens.repository';
-import { UsersRepository } from '../../database/repositories/users.repository';
-import { ISignInInput } from '../../typing/interfaces/sign-in.input';
-import { ISignUpInput } from '../../typing/interfaces/sign-up.input';
+import { AppInputError } from '../../../../errors';
+import {
+  UsersRepository,
+  RefreshTokensRepository,
+  UserEntity,
+  RefreshTokenEntity,
+} from '../../database';
+import { ISignInInput, ISignUpInput } from '../../typing';
 import { HashService } from './hash.service';
 import { JwtService } from './jwt.service';
 

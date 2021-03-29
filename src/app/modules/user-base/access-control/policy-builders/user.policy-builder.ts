@@ -1,12 +1,12 @@
-import { getRequest } from '../../../../utils/get-request.util';
-import { UserEntity } from '../../database/entities/user.entity';
-import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../../logic/contants';
+import { getRequest } from '../../../../utils';
+import { UserEntity } from '../../database';
+import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../../logic';
 import {
   IPolicyBuilder,
   IPolicyBuilderOptions,
-} from '../../typing/interfaces/policy-builder.interface';
-import { IPolicyBuilderSubject } from '../../typing/interfaces/subject.interface';
-import { UserPolicyAction } from '../actions/user-policy.action';
+  IPolicyBuilderSubject,
+} from '../../typing';
+import { UserPolicyAction } from '../actions';
 
 // User Policy Builder Subject
 type UserPolicyBuilderSubject = IPolicyBuilderSubject<UserEntity>;

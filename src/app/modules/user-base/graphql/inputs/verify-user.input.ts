@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IVerifyUserInput } from '../../typing/interfaces/verify-user.input';
+import { IVerifyUserInput } from '../../typing';
 
 /**
  * Verify User Input

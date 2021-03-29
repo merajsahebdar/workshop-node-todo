@@ -1,9 +1,8 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { AppInputError } from '../../../../errors/app-input.error';
-import { VerifyUserCommand } from '../commands/verify-user.command';
-import { UserVerifiedEvent } from '../events/user-verified.event';
-import { SignedParamsService } from '../services/signed-params.service';
-import { UserService } from '../services/user.service';
+import { AppInputError } from '../../../../errors';
+import { VerifyUserCommand } from '../commands';
+import { UserVerifiedEvent } from '../events';
+import { SignedParamsService, UserService } from '../services';
 
 /**
  * Verify User Command Handler

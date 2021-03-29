@@ -1,6 +1,6 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
-import { IAppContext } from '../../../../interfaces/app-context.interface';
+import { IAppContext } from '../../../../interfaces';
 
 @Injectable({ scope: Scope.REQUEST })
 export class CookieService {

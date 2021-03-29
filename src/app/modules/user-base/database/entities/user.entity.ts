@@ -12,7 +12,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { IUnsafeUserType, IUserType } from '../../typing/interfaces/user.type';
+import { IUnsafeUserType, IUserType } from '../../typing';
 
 /**
  * User Entity

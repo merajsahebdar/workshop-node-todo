@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { IUserType } from '../../typing/interfaces/user.type';
+import { IUserType } from '../../typing';
 
 /**
  * Send User Verification Email Command

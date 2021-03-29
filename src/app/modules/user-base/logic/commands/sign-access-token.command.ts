@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { UserEntity } from '../../database/entities/user.entity';
+import { UserEntity } from '../../database';
 
 /**
  * Sign Access Token Command

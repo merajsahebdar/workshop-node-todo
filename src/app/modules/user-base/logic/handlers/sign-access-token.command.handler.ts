@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SignAccessTokenCommand } from '../commands/sign-access-token.command';
-import { UserService } from '../services/user.service';
+import { SignAccessTokenCommand } from '../commands';
+import { UserService } from '../services';
 
 /**
  * Sign Access Token Command Handler

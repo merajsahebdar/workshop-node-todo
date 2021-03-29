@@ -6,14 +6,15 @@ import {
   mixin,
 } from '@nestjs/common';
 import memoize from 'lodash.memoize';
-import { every } from '../../../../utils/async-array.util';
-import { getArgs } from '../../../../utils/get-args.util';
-import { IPerm } from '../../typing/interfaces/perm.interface';
-import { IPolicyBuilder } from '../../typing/interfaces/policy-builder.interface';
-import { IPolicyHandler } from '../../typing/interfaces/policy-handler.interface';
-import { IPolicy } from '../../typing/interfaces/policy.interface';
-import { IRule } from '../../typing/interfaces/rule.interface';
-import { Policy } from '../factories/policy.factory';
+import { every, getArgs } from '../../../../utils';
+import {
+  IPerm,
+  IPolicyHandler,
+  IPolicyBuilder,
+  IPolicy,
+  IRule,
+} from '../../typing';
+import { Policy } from '../factories';
 
 /**
  * Policy Guard Interface

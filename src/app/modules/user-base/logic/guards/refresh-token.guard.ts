@@ -1,11 +1,10 @@
 import { CanActivate, ExecutionContext, Inject } from '@nestjs/common';
-import { getRequest } from '../../../../utils/get-request.util';
+import { getRequest } from '../../../../utils';
 import {
   REFRESH_TOKEN_COOKIE_KEY,
   REQUEST_AUTHORIZE_PROPERTY_KEY,
 } from '../contants';
-import { JwtService } from '../services/jwt.service';
-import { UserService } from '../services/user.service';
+import { JwtService, UserService } from '../services';
 
 /**
  * Refresh Token Guard

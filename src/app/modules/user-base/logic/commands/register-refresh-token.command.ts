@@ -1,10 +1,10 @@
 import { ICommand } from '@nestjs/cqrs';
-import { UserEntity } from '../../database/entities/user.entity';
+import { UserEntity } from '../../database';
 
 /**
- * Refresh Token Registerer Command
+ * Register Refresh Token Command
  */
-export class RefreshTokenRegistererCommand implements ICommand {
+export class RegisterRefreshTokenCommand implements ICommand {
   /**
    * Constructor
    *

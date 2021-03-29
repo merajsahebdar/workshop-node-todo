@@ -4,9 +4,9 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Queue } from 'bull';
 import { join } from 'path';
 import { stringify } from 'qs';
-import { IMailerQueueJobData } from '../queue-processors/mailer.queue-processor';
-import { SendUserVerificationEmailCommand } from '../commands/send-user-verification-email.command';
-import { SignedParamsService } from '../services/signed-params.service';
+import { IMailerQueueJobData } from '../queue-processors';
+import { SendUserVerificationEmailCommand } from '../commands';
+import { SignedParamsService } from '../services';
 
 /**
  * Send User Verification Email Command Handler

@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { ISignInInput } from '../../typing/interfaces/sign-in.input';
+import { ISignInInput } from '../../typing';
 
 /**
  * Sign In Input

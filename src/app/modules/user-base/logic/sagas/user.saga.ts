@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ICommand, IEvent, ofType, Saga } from '@nestjs/cqrs';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SendUserVerificationEmailCommand } from '../commands/send-user-verification-email.command';
-import { UserSignedUpEvent } from '../events/user-signed-up.event';
+import { SendUserVerificationEmailCommand } from '../commands';
+import { UserSignedUpEvent } from '../events';
 
 /**
  * User Saga

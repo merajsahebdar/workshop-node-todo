@@ -4,7 +4,7 @@ import { useContainer } from 'class-validator';
 import cookieParser from 'cookie-parser';
 import requestIp from 'request-ip';
 import { AppModule } from './app';
-import { ApolloErrorFilter } from './app/filters/apollo-error.filter';
+import { ApolloErrorFilter } from './app/filters';
 
 /**
  * Bootstrap

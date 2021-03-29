@@ -6,12 +6,12 @@ import {
   mixin,
 } from '@nestjs/common';
 import memoize from 'lodash.memoize';
-import { IAppRequest } from '../../../../interfaces/app-request.interface';
-import { getRequest } from '../../../../utils/get-request.util';
-import { IAuthJwtPayload } from '../../typing/interfaces/auth-jwt-payload';
+import { IAppRequest } from '../../../../interfaces';
+import { getRequest } from '../../../../utils';
+import { IAuthJwtPayload } from '../../typing';
 import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
-import { UserService } from '../services/user.service';
-import { IStrategy } from '../strategies/base.strategy';
+import { UserService } from '../services';
+import { IStrategy } from '../strategies';
 
 /**
  * Guard Interface

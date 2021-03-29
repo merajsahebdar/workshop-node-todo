@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { AppInputError } from '../../../../errors/app-input.error';
-import { IAppRequest } from '../../../../interfaces/app-request.interface';
+import { AppInputError } from '../../../../errors';
+import { IAppRequest } from '../../../../interfaces';
 import { Nullable } from '../../../../types';
-import { IAuthJwtPayload } from '../../typing/interfaces/auth-jwt-payload';
-import { JwtService } from '../services/jwt.service';
+import { IAuthJwtPayload } from '../../typing';
+import { JwtService } from '../services';
 import { BaseStrategy, IStrategy } from './base.strategy';
 
 /**
@@ -22,9 +22,9 @@ export class JwtStrategy extends BaseStrategy() implements IStrategy {
    * @param {IAppRequest} request
    * @returns
    */
-  async authenticate(request: IAppRequest): Promise<Nullable<IAuthJwtPayload>> {
+  async authenticate(req: IAppRequest): Promise<Nullable<IAuthJwtPayload>> {
     try {
-      const token = this.getToken(request);
+      const token = this.getToken(req);
       return this.jwtService.verifyToken(token);
     } catch {
       return null;

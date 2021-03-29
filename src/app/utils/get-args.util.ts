@@ -1,6 +1,6 @@
 import { ExecutionContext } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
-import { IAppRequest } from '../interfaces/app-request.interface';
+import { IAppRequest } from '../interfaces';
 
 /**
  * Return args from context.

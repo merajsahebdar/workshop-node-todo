@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { ISignInInput } from '../../typing/interfaces/sign-in.input';
+import { ISignInInput } from '../../typing';
 
 /**
  * Sign In Command

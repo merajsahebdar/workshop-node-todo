@@ -1,9 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail, Length } from 'class-validator';
-import { IsUnique } from '../../../../validators/is-unique.validator';
-import { MatchWith } from '../../../../validators/match-with.validator';
-import { UserEntity } from '../../database/entities/user.entity';
-import { ISignUpInput } from '../../typing/interfaces/sign-up.input';
+import { IsUnique, MatchWith } from '../../../../validators';
+import { UserEntity } from '../../database';
+import { ISignUpInput } from '../../typing';
 
 /**
  * Sign Up Input

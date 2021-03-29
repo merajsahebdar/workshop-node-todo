@@ -3,19 +3,19 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
 import { GraphQLBoolean } from 'graphql';
-import { AppInputError } from '../../../../errors/app-input.error';
-import { GqlValidationPipe } from '../../../../pipes/gql-validation.pipe';
-import { UserPolicyAction } from '../../access-control/actions/user-policy.action';
-import { UserPolicyBuilder } from '../../access-control/policy-builders/user.policy-builder';
-import { UserEntity } from '../../database/entities/user.entity';
-import { UserEmailAvailabilityCheckCommand } from '../../logic/commands/user-email-availability-check.command';
-import { VerifyUserCommand } from '../../logic/commands/verify-user.command';
-import { JwtGuard } from '../../logic/guards/jwt.guard';
-import { PolicyGuard } from '../../logic/guards/policy.guard';
-import { GetUserQuery } from '../../logic/queries/get-user.query';
-import { UserEmailAvailabilityCheckInput } from '../inputs/user-email-availability-check.input';
-import { VerifyUserInput } from '../inputs/verify-user.input';
-import { UserType } from '../types/user.type';
+import { AppInputError } from '../../../../errors';
+import { GqlValidationPipe } from '../../../../pipes';
+import { UserPolicyBuilder, UserPolicyAction } from '../../access-control';
+import { UserEntity } from '../../database';
+import {
+  JwtGuard,
+  PolicyGuard,
+  GetUserQuery,
+  VerifyUserCommand,
+  CheckUserEmailAvailabilityCommand,
+} from '../../logic';
+import { CheckUserEmailAvailabilityInput, VerifyUserInput } from '../inputs';
+import { UserType } from '../types';
 
 /**
  * User Resolver
@@ -35,15 +35,15 @@ export class UserResolver {
    * Check whether the provided email address is available for registeration
    *  or not.
    *
-   * @param {UserEmailAvailabilityCheckInput} input
+   * @param {CheckUserEmailAvailabilityInput} input
    * @returns
    */
   @Mutation(() => GraphQLBoolean)
   async isUserEmailAvailable(
-    @Args('input') input: UserEmailAvailabilityCheckInput,
+    @Args('input') input: CheckUserEmailAvailabilityInput,
   ): Promise<boolean> {
     return this.commandBus.execute(
-      new UserEmailAvailabilityCheckCommand(input),
+      new CheckUserEmailAvailabilityCommand(input),
     );
   }
 

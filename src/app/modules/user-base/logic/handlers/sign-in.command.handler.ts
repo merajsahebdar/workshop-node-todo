@@ -1,8 +1,8 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { UserEntity } from '../../database/entities/user.entity';
-import { SignInCommand } from '../commands/sign-in.command';
-import { UserSignedInEvent } from '../events/user-signed-in.event';
-import { UserService } from '../services/user.service';
+import { UserEntity } from '../../database';
+import { SignInCommand } from '../commands';
+import { UserSignedInEvent } from '../events';
+import { UserService } from '../services';
 
 /**
  * Sign In Command Handler

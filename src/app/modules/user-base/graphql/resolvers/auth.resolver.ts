@@ -2,20 +2,21 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
-import { AppInputError } from '../../../../errors/app-input.error';
-import { IAppContext } from '../../../../interfaces/app-context.interface';
-import { GqlValidationPipe } from '../../../../pipes/gql-validation.pipe';
-import { UserEntity } from '../../database/entities/user.entity';
-import { RefreshTokenRegistererCommand } from '../../logic/commands/refresh-token-registerer.command';
-import { SignAccessTokenCommand } from '../../logic/commands/sign-access-token.command';
-import { SignInCommand } from '../../logic/commands/sign-in.command';
-import { SignUpCommand } from '../../logic/commands/sign-up.command';
-import { REFRESH_TOKEN_COOKIE_KEY } from '../../logic/contants';
-import { AuthorizedUser } from '../../logic/decorators/authorized-user.decorator';
-import { RefreshTokenGuard } from '../../logic/guards/refresh-token.guard';
-import { CookieService } from '../../logic/services/cookie.service';
-import { SignInInput } from '../inputs/sign-in.input';
-import { SignUpInput } from '../inputs/sign-up.input';
+import { AppInputError } from '../../../../errors';
+import { IAppContext } from '../../../../interfaces';
+import { GqlValidationPipe } from '../../../../pipes';
+import { UserEntity } from '../../database';
+import {
+  SignInCommand,
+  SignAccessTokenCommand,
+  SignUpCommand,
+  RegisterRefreshTokenCommand,
+  CookieService,
+  RefreshTokenGuard,
+  AuthorizedUser,
+  REFRESH_TOKEN_COOKIE_KEY,
+} from '../../logic';
+import { SignInInput, SignUpInput } from '../inputs';
 
 /**
  * Auth Resolver
@@ -73,7 +74,7 @@ export class AuthResolver {
 
       // Register refresh token
       const refreshToken = await this.commandBus.execute(
-        new RefreshTokenRegistererCommand(
+        new RegisterRefreshTokenCommand(
           user,
           req.clientIp,
           req.headers['user-agent'],
@@ -111,7 +112,7 @@ export class AuthResolver {
 
       // Register refresh token
       const refreshToken = await this.commandBus.execute(
-        new RefreshTokenRegistererCommand(
+        new RegisterRefreshTokenCommand(
           user,
           req.clientIp,
           req.headers['user-agent'],

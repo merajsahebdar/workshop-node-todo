@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { IVerifyUserInput } from '../../typing/interfaces/verify-user.input';
+import { IVerifyUserInput } from '../../typing';
 
 /**
  * Verify User Command

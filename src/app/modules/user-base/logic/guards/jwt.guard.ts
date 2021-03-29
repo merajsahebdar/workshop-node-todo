@@ -1,4 +1,4 @@
-import { JwtStrategy } from '../strategies/jwt.strategy';
+import { JwtStrategy } from '../strategies';
 import { BaseGuard } from './base.guard';
 
 /**

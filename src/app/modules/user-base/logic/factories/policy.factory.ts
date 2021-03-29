@@ -4,12 +4,12 @@ import { Connection } from 'typeorm';
 import {
   IPolicyBuilderSubject,
   IPolicySubject,
-} from '../../typing/interfaces/subject.interface';
-import { IPolicy } from '../../typing/interfaces/policy.interface';
-import { IRule } from '../../typing/interfaces/rule.interface';
-import { IPerm } from '../../typing/interfaces/perm.interface';
-import { every } from '../../../../utils/async-array.util';
-import { AppInputError } from '../../../../errors/app-input.error';
+  IPolicy,
+  IRule,
+  IPerm,
+} from '../../typing';
+import { every } from '../../../../utils';
+import { AppInputError } from '../../../../errors';
 
 /**
  * Policy
