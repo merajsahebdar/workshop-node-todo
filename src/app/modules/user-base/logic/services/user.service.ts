@@ -36,7 +36,7 @@ export class UserService {
    * @returns
    */
   async exists(conditions: FindConditions<UserEntity>): Promise<boolean> {
-    return (await this.users.count({ where: conditions })) <= 0;
+    return (await this.users.count({ where: conditions })) > 0;
   }
 
   /**

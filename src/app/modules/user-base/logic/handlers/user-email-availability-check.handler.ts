@@ -22,6 +22,6 @@ export class UserEmailAvailabilityCheckCommandHandler
    * @returns
    */
   async execute(command: UserEmailAvailabilityCheckCommand): Promise<boolean> {
-    return this.userService.exists(command.input);
+    return !this.userService.exists(command.input);
   }
 }
