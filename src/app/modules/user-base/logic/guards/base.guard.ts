@@ -9,10 +9,9 @@ import memoize from 'lodash.memoize';
 import { IAppRequest } from '../../../../interfaces/app-request.interface';
 import { getRequest } from '../../../../utils/get-request.util';
 import { IAuthJwtPayload } from '../../typing/interfaces/auth-jwt-payload';
+import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
 import { UserService } from '../services/user.service';
 import { IStrategy } from '../strategies/base.strategy';
-
-export const REQUEST_AUTHORIZE_PROPERTY_KEY = 'authorizedUser';
 
 /**
  * Guard Interface

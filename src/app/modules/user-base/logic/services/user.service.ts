@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions } from 'typeorm';
 import { AppInputError } from '../../../../errors/app-input.error';
+import { RefreshTokenEntity } from '../../database/entities/refresh-token.entity';
 import { UserEntity } from '../../database/entities/user.entity';
+import { RefreshTokensRepository } from '../../database/repositories/refresh-tokens.repository';
 import { UsersRepository } from '../../database/repositories/users.repository';
 import { ISignInInput } from '../../typing/interfaces/sign-in.input';
 import { ISignUpInput } from '../../typing/interfaces/sign-up.input';
+import { HashService } from './hash.service';
 import { JwtService } from './jwt.service';
 
 /**
@@ -20,7 +23,10 @@ export class UserService {
    */
   constructor(
     @InjectRepository(UserEntity) private users: UsersRepository,
+    @InjectRepository(RefreshTokenEntity)
+    private refreshTokens: RefreshTokensRepository,
     private jwtService: JwtService,
+    private hashService: HashService,
   ) {}
 
   /**
@@ -31,6 +37,18 @@ export class UserService {
    */
   async exists(conditions: FindConditions<UserEntity>): Promise<boolean> {
     return (await this.users.count({ where: conditions })) <= 0;
+  }
+
+  /**
+   * Check whether is any refresh token exists with given conditions or not.
+   *
+   * @param {FindConditions<UserEntity>} conditions
+   * @returns
+   */
+  async refreshTokenExists(
+    conditions: FindConditions<RefreshTokenEntity>,
+  ): Promise<boolean> {
+    return (await this.refreshTokens.count({ where: conditions })) > 0;
   }
 
   /**
@@ -86,7 +104,7 @@ export class UserService {
       throw new AppInputError('The provided password is not correct.');
     }
 
-    return [user, this.signToken(user)];
+    return [user, this.signAccessToken(user)];
   }
 
   /**
@@ -105,17 +123,40 @@ export class UserService {
       }),
     );
 
-    return [user, this.signToken(user)];
+    return [user, this.signAccessToken(user)];
   }
 
   /**
-   * Sign a new token for provided user.
+   * Sign a new access token for provided user.
    *
    * @param {UserEntity} user
    * @returns
    */
-  private signToken(user: UserEntity): string {
+  signAccessToken(user: UserEntity): string {
     return this.jwtService.signToken({ uid: user.id, sub: user.toPlain() });
+  }
+
+  /**
+   * Sign a new refresh token for provided user.
+   *
+   * @param {UserEntity} user
+   * @returns
+   */
+  async signRefreshToken(
+    user: UserEntity,
+    clientIp?: string,
+    userAgent?: string,
+  ): Promise<string> {
+    const refreshToken = await this.refreshTokens.save(
+      this.refreshTokens.create({ userId: user.id, userAgent, clientIp }),
+    );
+
+    return this.jwtService.signToken({
+      uid: user.id,
+      nip: clientIp,
+      did: userAgent,
+      ver: refreshToken.id,
+    });
   }
 
   /**

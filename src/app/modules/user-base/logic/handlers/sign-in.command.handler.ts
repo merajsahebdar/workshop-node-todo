@@ -1,5 +1,7 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { UserEntity } from '../../database/entities/user.entity';
 import { SignInCommand } from '../commands/sign-in.command';
+import { UserSignedInEvent } from '../events/user-signed-in.event';
 import { UserService } from '../services/user.service';
 
 /**
@@ -10,9 +12,10 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
   /**
    * Constructor
    *
+   * @param {EventBus} eventBus
    * @param {UserService} userService
    */
-  constructor(private userService: UserService) {}
+  constructor(private eventBus: EventBus, private userService: UserService) {}
 
   /**
    * Execute
@@ -20,9 +23,11 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
    * @param {SignInCommand} command
    * @returns
    */
-  async execute(command: SignInCommand): Promise<string> {
-    const [, token] = await this.userService.signIn(command.input);
+  async execute(command: SignInCommand): Promise<[UserEntity, string]> {
+    const [user, accessToken] = await this.userService.signIn(command.input);
 
-    return token;
+    this.eventBus.publish(new UserSignedInEvent(user));
+
+    return [user, accessToken];
   }
 }

@@ -75,6 +75,11 @@ import { mailerConfig } from './configs/mailer.config';
           path: '/',
           autoSchemaFile: true,
           tracing: isDevelopment,
+          context: ({ req, res }) => ({ req, res }),
+          cors: {
+            credentials: true,
+            origin: 'http://localhost:3001',
+          },
         };
       },
     }),

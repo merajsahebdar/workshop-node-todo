@@ -1,6 +1,6 @@
 import { getRequest } from '../../../../utils/get-request.util';
 import { UserEntity } from '../../database/entities/user.entity';
-import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../../logic/guards/base.guard';
+import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../../logic/contants';
 import {
   IPolicyBuilder,
   IPolicyBuilderOptions,

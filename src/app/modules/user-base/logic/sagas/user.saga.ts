@@ -25,4 +25,18 @@ export class UserSaga {
       }),
     );
   }
+
+  // TODO: Register refresh token on sign-in event.
+  // SEE: https://github.com/nestjs/cqrs/pull/549
+  // @Saga()
+  // registerRefreshTokenCookie(
+  //   events$: Observable<IEvent>,
+  // ): Observable<ICommand> {
+  //   return events$.pipe(
+  //     ofType(UserSignedInEvent),
+  //     map((event) => {
+  //       return new RefreshTokenRegistererCommand(event.user);
+  //     }),
+  //   );
+  // }
 }
