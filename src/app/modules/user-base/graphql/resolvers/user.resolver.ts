@@ -5,7 +5,7 @@ import {
   Mutation,
   Parent,
   Query,
-  ResolveProperty,
+  ResolveField,
   Resolver,
 } from '@nestjs/graphql';
 import { GraphQLBoolean } from 'graphql';
@@ -79,14 +79,14 @@ export class UserResolver {
    * @param {string} id
    * @returns
    */
-  @Query(() => UserType)
+  @Query(() => UserType, { name: 'user' })
   @UseGuards(
     JwtGuard,
     PolicyGuard(UserPolicyBuilder, ({ can, args: { id } }) => {
       can(UserPolicyAction.READ, ['typeorm', UserEntity, { id }]);
     }),
   )
-  async user(@Args('id') id: string): Promise<UserType> {
+  async getUser(@Args('id') id: string): Promise<UserType> {
     return this.queryBus.execute(new GetUserQuery(id));
   }
 
@@ -95,8 +95,8 @@ export class UserResolver {
    *
    * @returns
    */
-  @ResolveProperty(() => AccountType)
-  async account(@Parent() { id }: UserType): Promise<AccountType> {
+  @ResolveField(() => AccountType, { name: 'account' })
+  async getAccount(@Parent() { id }: UserType): Promise<AccountType> {
     return this.accountService.findByUserId(id);
   }
 }
