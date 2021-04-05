@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserPolicyBuilder } from './access-control';
-import { RefreshTokenEntity, UserEntity } from './database';
+import { AccountEntity, RefreshTokenEntity, UserEntity } from './database';
 import { AuthResolver, UserResolver } from './graphql';
 import {
   VerifyUserCommandHandler,
@@ -23,6 +23,7 @@ import {
   JwtStrategy,
   Policy,
   UserSaga,
+  AccountService,
 } from './logic';
 
 /**
@@ -32,12 +33,13 @@ import {
   imports: [
     CqrsModule,
     BullModule.registerQueue({ name: 'mailer' }),
-    TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity]),
+    TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity, AccountEntity]),
   ],
   providers: [
     MailerQueueProcessor,
     SignedParamsService,
     UserService,
+    AccountService,
     JwtService,
     HashService,
     CookieService,

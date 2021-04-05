@@ -9,7 +9,6 @@ import {
   RefreshTokenEntity,
 } from '../../database';
 import { ISignInInput, ISignUpInput } from '../../typing';
-import { HashService } from './hash.service';
 import { JwtService } from './jwt.service';
 
 /**
@@ -27,7 +26,6 @@ export class UserService {
     @InjectRepository(RefreshTokenEntity)
     private refreshTokens: RefreshTokensRepository,
     private jwtService: JwtService,
-    private hashService: HashService,
   ) {}
 
   /**

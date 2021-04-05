@@ -1,6 +1,13 @@
 import { UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveProperty,
+  Resolver,
+} from '@nestjs/graphql';
 import { UserInputError } from 'apollo-server-core';
 import { GraphQLBoolean } from 'graphql';
 import { AppInputError } from '../../../../errors';
@@ -13,9 +20,11 @@ import {
   GetUserQuery,
   VerifyUserCommand,
   CheckUserEmailAvailabilityCommand,
+  AccountService,
 } from '../../logic';
 import { CheckUserEmailAvailabilityInput, VerifyUserInput } from '../inputs';
 import { UserType } from '../types';
+import { AccountType } from '../types/account.type';
 
 /**
  * User Resolver
@@ -28,8 +37,13 @@ export class UserResolver {
    *
    * @param {QueryBus} queryBus
    * @param {CommandBus} commandBus
+   * @param {AccountService} accountService
    */
-  constructor(private queryBus: QueryBus, private commandBus: CommandBus) {}
+  constructor(
+    private queryBus: QueryBus,
+    private commandBus: CommandBus,
+    private accountService: AccountService,
+  ) {}
 
   /**
    * Check whether the provided email address is available for registeration
@@ -90,5 +104,15 @@ export class UserResolver {
 
       throw error;
     }
+  }
+
+  /**
+   * User's Account
+   *
+   * @returns
+   */
+  @ResolveProperty(() => AccountType)
+  async account(@Parent() { id }: UserType): Promise<AccountType> {
+    return this.accountService.findByUserId(id);
   }
 }

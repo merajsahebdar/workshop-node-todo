@@ -1,5 +1,6 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { IUserType } from '../../typing';
+import { AccountType } from './account.type';
 
 /**
  * User Type
@@ -17,6 +18,9 @@ export class UserType implements IUserType {
 
   @Field()
   isBlocked: boolean;
+
+  @Field(() => AccountType)
+  account: AccountType;
 
   @Field()
   isVerified: boolean;

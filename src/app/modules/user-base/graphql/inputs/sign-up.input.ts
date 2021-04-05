@@ -1,8 +1,20 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsEmail, Length } from 'class-validator';
+import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { IsUnique, MatchWith } from '../../../../validators';
 import { UserEntity } from '../../database';
-import { ISignUpInput } from '../../typing';
+import { ISignUpAccountInput, ISignUpInput } from '../../typing';
+
+/**
+ * Sign Up Account Type
+ */
+@InputType()
+class SignUpAccountInput implements ISignUpAccountInput {
+  @Field()
+  forename: string;
+
+  @Field()
+  surname: string;
+}
 
 /**
  * Sign Up Input
@@ -27,4 +39,8 @@ export class SignUpInput implements ISignUpInput {
     message: 'Provided passwords must match.',
   })
   readonly passwordConfirm: string;
+
+  @Field(() => SignUpAccountInput)
+  @ValidateNested()
+  account: SignUpAccountInput;
 }
