@@ -1,4 +1,6 @@
-# Shanbe! An API Boilerplate built on top of NestJS
+# Shanbe API
+
+_An API Boilerplate built on top of NestJS._
 
 ## Features
 
@@ -7,8 +9,8 @@
 
 ## Requirements
 
-- `Node.JS >= 15.0.0`
-- `PostgreSQL >= 13.0.0`
+- `Node.JS ^14.0.0`
+- `PostgreSQL >=13.0.0`
 
 ## Environment Variables
 
@@ -20,16 +22,15 @@
 - `JWT_PUBLIC_KEY=storage/jwt/public.key`: Path to a public key to use as jwt signature
 - `JWT_PRIVATE_KEY=storage/jwt/private.key`: Path to a private key to use as jwt signature
 - `JWT_PRiVATE_KEY_PASSPHRASE=password`: The passphrase belongs to the jwt private key
-
-## Installation
-
-```bash
-yarn install
-```
+- `REDIS_HOST`, `REDIS_PORT`: Redis Connection Settings
+- `MAILER_TRANSPORT`, `MAILER_DEFAULT_SENDER`: Mail Settings
 
 ## Running the API
 
 ```bash
+# install dependencies
+yarn install
+
 # development
 yarn run start
 
