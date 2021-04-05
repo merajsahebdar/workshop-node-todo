@@ -1,8 +1,7 @@
-import { UseGuards, UsePipes } from '@nestjs/common';
+import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { UserInputError } from 'apollo-server-core';
-import { AppInputError } from '../../../../errors';
+import { GqlAppInputErrorFilter } from '../../../../filters/gql-app-input-error.filter';
 import { IAppContext } from '../../../../interfaces';
 import { GqlValidationPipe } from '../../../../pipes';
 import { UserEntity } from '../../database';
@@ -23,6 +22,7 @@ import { SignInInput, SignUpInput } from '../inputs';
  */
 @Resolver()
 @UsePipes(new GqlValidationPipe())
+@UseFilters(new GqlAppInputErrorFilter())
 export class AuthResolver {
   /**
    * Constructor
@@ -44,15 +44,7 @@ export class AuthResolver {
   @UseGuards(RefreshTokenGuard)
   @Mutation(() => String)
   async refreshToken(@AuthorizedUser() user: UserEntity): Promise<string> {
-    try {
-      return await this.commandBus.execute(new SignAccessTokenCommand(user));
-    } catch (error) {
-      if (error instanceof AppInputError) {
-        throw new UserInputError(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return this.commandBus.execute(new SignAccessTokenCommand(user));
   }
 
   /**
@@ -66,31 +58,23 @@ export class AuthResolver {
     @Context() { req }: IAppContext,
     @Args('input') input: SignInInput,
   ): Promise<string> {
-    try {
-      // Login
-      const [user, accessToken] = await this.commandBus.execute(
-        new SignInCommand(input),
-      );
+    // Login
+    const [user, accessToken] = await this.commandBus.execute(
+      new SignInCommand(input),
+    );
 
-      // Register refresh token
-      const refreshToken = await this.commandBus.execute(
-        new RegisterRefreshTokenCommand(
-          user,
-          req.clientIp,
-          req.headers['user-agent'],
-        ),
-      );
+    // Register refresh token
+    const refreshToken = await this.commandBus.execute(
+      new RegisterRefreshTokenCommand(
+        user,
+        req.clientIp,
+        req.headers['user-agent'],
+      ),
+    );
 
-      this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
 
-      return accessToken;
-    } catch (error) {
-      if (error instanceof AppInputError) {
-        throw new UserInputError(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return accessToken;
   }
 
   /**
@@ -104,30 +88,22 @@ export class AuthResolver {
     @Context() { req }: IAppContext,
     @Args('input') input: SignUpInput,
   ): Promise<string> {
-    try {
-      // Register
-      const [user, accessToken] = await this.commandBus.execute(
-        new SignUpCommand(input),
-      );
+    // Register
+    const [user, accessToken] = await this.commandBus.execute(
+      new SignUpCommand(input),
+    );
 
-      // Register refresh token
-      const refreshToken = await this.commandBus.execute(
-        new RegisterRefreshTokenCommand(
-          user,
-          req.clientIp,
-          req.headers['user-agent'],
-        ),
-      );
+    // Register refresh token
+    const refreshToken = await this.commandBus.execute(
+      new RegisterRefreshTokenCommand(
+        user,
+        req.clientIp,
+        req.headers['user-agent'],
+      ),
+    );
 
-      this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
 
-      return accessToken;
-    } catch (error) {
-      if (error instanceof AppInputError) {
-        throw new UserInputError(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return accessToken;
   }
 }

@@ -1,4 +1,4 @@
-import { UseGuards, UsePipes } from '@nestjs/common';
+import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
@@ -8,9 +8,8 @@ import {
   ResolveProperty,
   Resolver,
 } from '@nestjs/graphql';
-import { UserInputError } from 'apollo-server-core';
 import { GraphQLBoolean } from 'graphql';
-import { AppInputError } from '../../../../errors';
+import { GqlAppInputErrorFilter } from '../../../../filters/gql-app-input-error.filter';
 import { GqlValidationPipe } from '../../../../pipes';
 import { UserPolicyBuilder, UserPolicyAction } from '../../access-control';
 import { UserEntity } from '../../database';
@@ -31,6 +30,7 @@ import { AccountType } from '../types/account.type';
  */
 @Resolver(() => UserType)
 @UsePipes(new GqlValidationPipe())
+@UseFilters(new GqlAppInputErrorFilter())
 export class UserResolver {
   /**
    * Constructor
@@ -70,15 +70,7 @@ export class UserResolver {
   @Mutation(() => GraphQLBoolean)
   @UseGuards(JwtGuard)
   async verifyUser(@Args('input') input: VerifyUserInput): Promise<boolean> {
-    try {
-      return await this.commandBus.execute(new VerifyUserCommand(input));
-    } catch (error) {
-      if (error instanceof AppInputError) {
-        throw new UserInputError(error.message);
-      }
-
-      throw error;
-    }
+    return this.commandBus.execute(new VerifyUserCommand(input));
   }
 
   /**
@@ -95,15 +87,7 @@ export class UserResolver {
     }),
   )
   async user(@Args('id') id: string): Promise<UserType> {
-    try {
-      return await this.queryBus.execute(new GetUserQuery(id));
-    } catch (error) {
-      if (error instanceof AppInputError) {
-        throw new UserInputError(error.message);
-      }
-
-      throw error;
-    }
+    return this.queryBus.execute(new GetUserQuery(id));
   }
 
   /**
