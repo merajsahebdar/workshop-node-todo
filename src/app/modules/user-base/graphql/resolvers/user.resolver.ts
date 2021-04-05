@@ -20,7 +20,7 @@ import { UserType } from '../types';
 /**
  * User Resolver
  */
-@Resolver(UserType)
+@Resolver(() => UserType)
 @UsePipes(new GqlValidationPipe())
 export class UserResolver {
   /**
