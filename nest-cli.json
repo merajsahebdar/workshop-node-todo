@@ -1,8 +1,31 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
   "compilerOptions": {
-    "assets": ["**/*.pug"],
-    "watchAssets": true
+    "assets": [
+      "**/*.pug"
+    ],
+    "watchAssets": true,
+    "webpack": true
+  },
+  "monorepo": true,
+  "projects": {
+    "base": {
+      "type": "application",
+      "root": "apps/base",
+      "entryFile": "main",
+      "sourceRoot": "apps/base/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/base/tsconfig.app.json"
+      }
+    },
+    "shared": {
+      "type": "library",
+      "root": "libs/shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+      }
+    }
   }
 }
