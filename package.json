@@ -48,7 +48,9 @@
     ],
     "moduleNameMapper": {
       "@shared/shared/(.*)": "<rootDir>/libs/shared/src/$1",
-      "@shared/shared": "<rootDir>/libs/shared/src"
+      "@shared/shared": "<rootDir>/libs/shared/src",
+      "@app/auth/(.*)": "<rootDir>/libs/auth/src/$1",
+      "@app/auth": "<rootDir>/libs/auth/src"
     }
   },
   "dependencies": {

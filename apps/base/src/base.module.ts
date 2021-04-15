@@ -1,3 +1,4 @@
+import { AuthModule } from '@app/auth';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -30,7 +31,6 @@ import {
 import { UserSaga } from './sagas';
 import { IsUniqueConstraint } from '@app/shared';
 import { JwtStrategy } from './strategies';
-import { Policy } from './factories';
 import {
   AccountService,
   CookieService,
@@ -107,6 +107,7 @@ import { MailerQueueProcessor } from './queue-processors';
       },
     }),
     // Application Modules
+    AuthModule,
     CqrsModule,
     BullModule.registerQueue({ name: 'mailer' }),
     TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity, AccountEntity]),
@@ -120,7 +121,6 @@ import { MailerQueueProcessor } from './queue-processors';
     HashService,
     CookieService,
     JwtStrategy,
-    Policy,
     UserPolicyBuilder,
     GetUserQueryHandler,
     CheckUserEmailAvailabilityCommandHandler,

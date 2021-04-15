@@ -1,3 +1,4 @@
+import { PolicyGuard } from '@app/auth';
 import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/shared';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -19,7 +20,7 @@ import {
 import { CheckUserEmailAvailabilityInput, VerifyUserInput } from '../inputs';
 import { UserType } from '../types';
 import { AccountType } from '../types/account.type';
-import { JwtGuard, PolicyGuard } from '../guards';
+import { JwtGuard } from '../guards';
 import { UserPolicyAction } from '../actions';
 import { GetUserQuery } from '../queries';
 import { AccountService } from '../services';
