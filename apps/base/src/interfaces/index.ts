@@ -1,5 +1,4 @@
 export * from './account.type';
-export * from './auth-jwt-payload';
 export * from './check-user-email-availability.input';
 export * from './node.type';
 export * from './refresh-token.type';

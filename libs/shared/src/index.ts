@@ -4,5 +4,7 @@ export * from './filters';
 export * from './interfaces';
 export * from './pipes';
 export * from './types';
+export * from './services';
+export * from './shared.module';
 export * from './utils';
 export * from './validators';

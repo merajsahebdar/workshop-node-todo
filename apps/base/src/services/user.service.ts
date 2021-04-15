@@ -1,11 +1,10 @@
-import { AppInputError } from '@app/shared';
+import { AppInputError, JwtService } from '@app/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions } from 'typeorm';
 import { UserEntity, RefreshTokenEntity } from '../entities';
 import { ISignInInput, ISignUpInput } from '../interfaces';
 import { RefreshTokensRepository, UsersRepository } from '../repositories';
-import { JwtService } from './jwt.service';
 
 /**
  * User Service

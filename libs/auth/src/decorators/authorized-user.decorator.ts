@@ -1,6 +1,5 @@
 import { getRequest } from '@app/shared';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserEntity } from '../entities';
 import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
 
 /**
@@ -10,12 +9,10 @@ import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
  * This decorator must be used in authorized requests.
  */
 export const AuthorizedUser = createParamDecorator(
-  (field: keyof UserEntity | undefined, context: ExecutionContext) => {
+  (field: string | undefined, context: ExecutionContext) => {
     const request = getRequest(context);
 
-    const authorizedUser = (request as any)[
-      REQUEST_AUTHORIZE_PROPERTY_KEY
-    ] as UserEntity;
+    const authorizedUser = (request as any)[REQUEST_AUTHORIZE_PROPERTY_KEY];
 
     return field ? authorizedUser[field] : authorizedUser;
   },

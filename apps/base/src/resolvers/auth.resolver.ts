@@ -1,3 +1,4 @@
+import { AuthGuard, AuthorizedUser, REFRESH_TOKEN_COOKIE_KEY } from '@app/auth';
 import {
   GqlAppInputErrorFilter,
   GqlValidationPipe,
@@ -15,9 +16,7 @@ import {
 } from '../commands';
 import { CookieService } from '../services';
 import { SignInInput, SignUpInput } from '../inputs';
-import { RefreshTokenGuard } from '../guards';
-import { AuthorizedUser } from '../decorators';
-import { REFRESH_TOKEN_COOKIE_KEY } from '../contants';
+import { RefreshTokenAuthStrategy } from '@app/auth/strategies/refresh-token.auth.strategy';
 
 /**
  * Auth Resolver
@@ -43,7 +42,7 @@ export class AuthResolver {
    * @param {UserEntity} user
    * @returns
    */
-  @UseGuards(RefreshTokenGuard)
+  @UseGuards(AuthGuard(RefreshTokenAuthStrategy))
   @Mutation(() => String)
   async refreshToken(@AuthorizedUser() user: UserEntity): Promise<string> {
     return this.commandBus.execute(new SignAccessTokenCommand(user));

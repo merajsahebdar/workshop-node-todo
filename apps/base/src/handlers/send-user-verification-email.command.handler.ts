@@ -1,3 +1,4 @@
+import { SignedParamsService } from '@app/shared';
 import { InjectQueue } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
@@ -6,7 +7,6 @@ import { join } from 'path';
 import { stringify } from 'qs';
 import { IMailerQueueJobData } from '../queue-processors';
 import { SendUserVerificationEmailCommand } from '../commands';
-import { SignedParamsService } from '../services';
 
 /**
  * Send User Verification Email Command Handler

@@ -1,4 +1,4 @@
-import { PolicyGuard } from '@app/auth';
+import { AuthGuard, PolicyGuard, JwtAuthStrategy } from '@app/auth';
 import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/shared';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -20,7 +20,6 @@ import {
 import { CheckUserEmailAvailabilityInput, VerifyUserInput } from '../inputs';
 import { UserType } from '../types';
 import { AccountType } from '../types/account.type';
-import { JwtGuard } from '../guards';
 import { UserPolicyAction } from '../actions';
 import { GetUserQuery } from '../queries';
 import { AccountService } from '../services';
@@ -68,7 +67,7 @@ export class UserResolver {
    * @returns
    */
   @Mutation(() => GraphQLBoolean)
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard(JwtAuthStrategy))
   async verifyUser(@Args('input') input: VerifyUserInput): Promise<boolean> {
     return this.commandBus.execute(new VerifyUserCommand(input));
   }
@@ -81,7 +80,7 @@ export class UserResolver {
    */
   @Query(() => UserType, { name: 'user' })
   @UseGuards(
-    JwtGuard,
+    AuthGuard(JwtAuthStrategy),
     PolicyGuard(UserPolicyBuilder, ({ can, args: { id } }) => {
       can(UserPolicyAction.READ, ['typeorm', UserEntity, { id }]);
     }),

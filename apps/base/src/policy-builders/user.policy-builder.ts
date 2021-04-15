@@ -2,10 +2,10 @@ import {
   IPolicyBuilder,
   IPolicyBuilderOptions,
   IPolicyBuilderSubject,
+  REQUEST_AUTHORIZE_PROPERTY_KEY,
 } from '@app/auth';
 import { getRequest } from '@app/shared';
 import { UserEntity } from '../entities';
-import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
 import { UserPolicyAction } from '../actions';
 
 // User Policy Builder Subject

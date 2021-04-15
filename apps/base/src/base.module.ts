@@ -29,16 +29,8 @@ import {
   RegisterRefreshTokenCommandHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
-import { IsUniqueConstraint } from '@app/shared';
-import { JwtStrategy } from './strategies';
-import {
-  AccountService,
-  CookieService,
-  HashService,
-  JwtService,
-  SignedParamsService,
-  UserService,
-} from './services';
+import { IsUniqueConstraint, SharedModule } from '@app/shared';
+import { AccountService, CookieService, UserService } from './services';
 import { MailerQueueProcessor } from './queue-processors';
 
 /**
@@ -107,6 +99,7 @@ import { MailerQueueProcessor } from './queue-processors';
       },
     }),
     // Application Modules
+    SharedModule,
     AuthModule,
     CqrsModule,
     BullModule.registerQueue({ name: 'mailer' }),
@@ -114,13 +107,9 @@ import { MailerQueueProcessor } from './queue-processors';
   ],
   providers: [
     MailerQueueProcessor,
-    SignedParamsService,
     UserService,
     AccountService,
-    JwtService,
-    HashService,
     CookieService,
-    JwtStrategy,
     UserPolicyBuilder,
     GetUserQueryHandler,
     CheckUserEmailAvailabilityCommandHandler,
