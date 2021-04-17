@@ -5,7 +5,9 @@ _An API Boilerplate built on top of NestJS._
 ## Features
 
 - Authentication and Authorization
-- Email Verification
+- [Casbin](https://casbin.org) based Access Control
+- User Email Verification
+- Mailing Queue
 
 ## Requirements
 
