@@ -1,4 +1,4 @@
-import { extendMetadata } from '@app/shared';
+import { extendMetadata } from '@app/common';
 import { RBAC_PERMISSIONS_METADATA } from '../contants';
 import { PermissionCreator, RbacPermission } from '../types';
 

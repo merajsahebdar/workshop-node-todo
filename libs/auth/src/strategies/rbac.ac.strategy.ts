@@ -1,4 +1,4 @@
-import { every, getArgs, getRequest } from '@app/shared';
+import { every, getArgs, getRequest } from '@app/common';
 import { ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Enforcer } from 'casbin';

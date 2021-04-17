@@ -5,7 +5,7 @@ import {
   UsePermissions,
   RbacStrategy,
 } from '@app/auth';
-import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/shared';
+import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {

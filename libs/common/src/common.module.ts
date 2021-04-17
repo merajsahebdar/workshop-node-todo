@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { HashService, JwtService, SignedParamsService } from './services';
 
 /**
- * Shared Module
+ * Common Module
  */
 @Module({
   providers: [JwtService, HashService, SignedParamsService],
   exports: [JwtService, HashService, SignedParamsService],
 })
-export class SharedModule {}
+export class CommonModule {}

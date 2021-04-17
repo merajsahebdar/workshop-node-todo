@@ -3,7 +3,7 @@ import {
   GqlAppInputErrorFilter,
   GqlValidationPipe,
   IAppContext,
-} from '@app/shared';
+} from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';

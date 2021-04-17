@@ -18,13 +18,13 @@
         "tsConfigPath": "apps/base/tsconfig.app.json"
       }
     },
-    "shared": {
+    "common": {
       "type": "library",
-      "root": "libs/shared",
+      "root": "libs/common",
       "entryFile": "index",
-      "sourceRoot": "libs/shared/src",
+      "sourceRoot": "libs/common/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/shared/tsconfig.lib.json"
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     },
     "auth": {

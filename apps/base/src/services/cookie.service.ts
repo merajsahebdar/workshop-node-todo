@@ -1,4 +1,4 @@
-import { IAppContext } from '@app/shared';
+import { IAppContext } from '@app/common';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 

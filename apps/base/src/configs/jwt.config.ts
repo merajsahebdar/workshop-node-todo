@@ -1,4 +1,4 @@
-import { rootDir } from '@app/shared';
+import { rootDir } from '@app/common';
 import { join } from 'path';
 
 /**

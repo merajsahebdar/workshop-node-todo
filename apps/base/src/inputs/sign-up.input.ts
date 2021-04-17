@@ -1,4 +1,4 @@
-import { IsUnique, MatchWith } from '@app/shared';
+import { IsUnique, MatchWith } from '@app/common';
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { UserEntity } from '../entities';

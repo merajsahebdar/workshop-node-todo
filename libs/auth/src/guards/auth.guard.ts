@@ -1,4 +1,4 @@
-import { getRequest, IAppRequest } from '@app/shared';
+import { getRequest, IAppRequest } from '@app/common';
 import { ExecutionContext, Inject, Type, mixin } from '@nestjs/common';
 import memoize from 'lodash.memoize';
 import { IAuthStrategy, IAuthGuard } from '../interfaces';

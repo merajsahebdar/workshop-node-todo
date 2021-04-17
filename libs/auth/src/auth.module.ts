@@ -1,4 +1,4 @@
-import { SharedModule } from '@app/shared';
+import { CommonModule } from '@app/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { newEnforcer, newModel } from 'casbin';
@@ -19,7 +19,7 @@ import {
     // Third-party Modules
     TypeOrmModule.forFeature([CasbinRbacPolicyEntity]),
     // App Modules
-    SharedModule,
+    CommonModule,
   ],
   providers: [
     JwtAuthStrategy,

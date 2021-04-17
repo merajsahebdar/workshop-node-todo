@@ -1,4 +1,5 @@
 import { AuthModule } from '@app/auth';
+import { IsUniqueConstraint, CommonModule } from '@app/common';
 import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -28,7 +29,6 @@ import {
   RegisterRefreshTokenCommandHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
-import { IsUniqueConstraint, SharedModule } from '@app/shared';
 import { AccountService, CookieService, UserService } from './services';
 import { MailerQueueProcessor } from './queue-processors';
 
@@ -97,8 +97,8 @@ import { MailerQueueProcessor } from './queue-processors';
         };
       },
     }),
-    // Application Modules
-    SharedModule,
+    // App Modules
+    CommonModule,
     AuthModule,
     CqrsModule,
     BullModule.registerQueue({ name: 'mailer' }),

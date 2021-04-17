@@ -14,11 +14,11 @@
     "esModuleInterop": true,
     "baseUrl": "./",
     "paths": {
-      "@app/shared": [
-        "libs/shared/src"
+      "@app/common": [
+        "libs/common/src"
       ],
-      "@app/shared/*": [
-        "libs/shared/src/*"
+      "@app/common/*": [
+        "libs/common/src/*"
       ],
       "@app/auth": [
         "libs/auth/src"

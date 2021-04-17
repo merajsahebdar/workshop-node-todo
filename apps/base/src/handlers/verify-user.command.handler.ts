@@ -1,5 +1,5 @@
-import { SignedParamsService } from '@app/shared';
-import { AppInputError } from '@app/shared';
+import { SignedParamsService } from '@app/common';
+import { AppInputError } from '@app/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { VerifyUserCommand } from '../commands';
 import { UserVerifiedEvent } from '../events';

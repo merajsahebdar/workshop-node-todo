@@ -1,4 +1,4 @@
-import { SignedParamsService } from '@app/shared';
+import { SignedParamsService } from '@app/common';
 import { InjectQueue } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';

@@ -1,4 +1,4 @@
-import { JwtService, getRequest } from '@app/shared';
+import { JwtService, getRequest } from '@app/common';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, ObjectLiteral, Repository } from 'typeorm';

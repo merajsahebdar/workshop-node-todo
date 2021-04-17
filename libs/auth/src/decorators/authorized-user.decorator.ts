@@ -1,4 +1,4 @@
-import { getRequest } from '@app/shared';
+import { getRequest } from '@app/common';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
 

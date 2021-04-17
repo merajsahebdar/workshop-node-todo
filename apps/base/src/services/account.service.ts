@@ -1,4 +1,4 @@
-import { AppInputError } from '@app/shared';
+import { AppInputError } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial } from 'typeorm';

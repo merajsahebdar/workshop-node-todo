@@ -1,4 +1,4 @@
-import { AppInputError, JwtService } from '@app/shared';
+import { AppInputError, JwtService } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindConditions } from 'typeorm';
