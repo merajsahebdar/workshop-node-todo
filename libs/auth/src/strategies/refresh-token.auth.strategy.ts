@@ -1,12 +1,12 @@
-import { Nullable, IAppRequest, JwtService } from '@app/shared';
-import { Injectable } from '@nestjs/common';
+import { JwtService, getRequest } from '@app/shared';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, ObjectLiteral, Repository } from 'typeorm';
 import {
   REFRESH_TOKEN_COOKIE_KEY,
   REQUEST_AUTHORIZE_PROPERTY_KEY,
 } from '../contants';
-import { IStrategy } from '../interfaces';
+import { IAuthStrategy } from '../interfaces';
 
 /**
  * Refresh Token Auth Strategy
@@ -14,7 +14,7 @@ import { IStrategy } from '../interfaces';
  * @memberof Feature/Auth/Strategy
  */
 @Injectable()
-export class RefreshTokenAuthStrategy implements IStrategy {
+export class RefreshTokenAuthStrategy implements IAuthStrategy {
   /**
    * Users
    */
@@ -42,46 +42,28 @@ export class RefreshTokenAuthStrategy implements IStrategy {
   /**
    * Authenticate
    *
-   * @param {IAppRequest} request
+   * @param {ExecutionContext} context
    * @returns
    */
-  async authenticate(req: IAppRequest): Promise<Nullable<any>> {
-    try {
-      const { uid, ver } = this.jwtService.verifyToken(
-        req.cookies[REFRESH_TOKEN_COOKIE_KEY],
-      );
+  async authenticate(context: ExecutionContext): Promise<boolean> {
+    const request = getRequest(context);
 
-      if ((await this.refreshTokens.count({ id: ver })) <= 0) {
-        const user = await this.users.findOne(uid);
-        req[REQUEST_AUTHORIZE_PROPERTY_KEY] = user;
-
-        return true;
-      }
-    } catch {
-      return null;
+    if (!!request[REQUEST_AUTHORIZE_PROPERTY_KEY]) {
+      return true;
     }
 
-    return null;
-  }
+    const { uid, ver } = this.jwtService.verifyToken(
+      request.cookies[REFRESH_TOKEN_COOKIE_KEY],
+    );
 
-  /**
-   * Authorize the request using the given auth value.
-   *
-   * @param {IAppRequest} request
-   * @param {IAuthJwtPayload} payload
-   * @returns
-   */
-  async authorize(request: IAppRequest, { sub }: any): Promise<void> {
-    (request as any)[REQUEST_AUTHORIZE_PROPERTY_KEY] = sub;
-  }
+    const refreshToken = this.refreshTokens.findOne(ver);
+    const user = this.users.findOne(uid);
+    if (refreshToken && user) {
+      request[REQUEST_AUTHORIZE_PROPERTY_KEY] = user;
 
-  /**
-   * Check whether the current request is authorized befor or not.
-   *
-   * @param {IAppRequest} request
-   * @returns
-   */
-  isAuthorized(request: IAppRequest): boolean | Promise<boolean> {
-    return !!(request as any)[REQUEST_AUTHORIZE_PROPERTY_KEY];
+      return true;
+    }
+
+    return false;
   }
 }

@@ -1,4 +1,10 @@
-import { AuthGuard, PolicyGuard, JwtAuthStrategy } from '@app/auth';
+import {
+  AuthGuard,
+  AcGuard,
+  JwtAuthStrategy,
+  UsePermissions,
+  RbacStrategy,
+} from '@app/auth';
 import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/shared';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -11,8 +17,6 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { GraphQLBoolean } from 'graphql';
-import { UserPolicyBuilder } from '../policy-builders';
-import { UserEntity } from '../entities';
 import {
   VerifyUserCommand,
   CheckUserEmailAvailabilityCommand,
@@ -20,9 +24,9 @@ import {
 import { CheckUserEmailAvailabilityInput, VerifyUserInput } from '../inputs';
 import { UserType } from '../types';
 import { AccountType } from '../types/account.type';
-import { UserPolicyAction } from '../actions';
 import { GetUserQuery } from '../queries';
 import { AccountService } from '../services';
+import { UserArgs } from '../args';
 
 /**
  * User Resolver
@@ -79,13 +83,9 @@ export class UserResolver {
    * @returns
    */
   @Query(() => UserType, { name: 'user' })
-  @UseGuards(
-    AuthGuard(JwtAuthStrategy),
-    PolicyGuard(UserPolicyBuilder, ({ can, args: { id } }) => {
-      can(UserPolicyAction.READ, ['typeorm', UserEntity, { id }]);
-    }),
-  )
-  async getUser(@Args('id') id: string): Promise<UserType> {
+  @UseGuards(AuthGuard(JwtAuthStrategy), AcGuard(RbacStrategy))
+  @UsePermissions(({ id }: UserArgs) => [`users:${id}`, 'read'])
+  async getUser(@Args() { id }: UserArgs): Promise<UserType> {
     return this.queryBus.execute(new GetUserQuery(id));
   }
 

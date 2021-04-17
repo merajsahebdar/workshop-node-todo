@@ -1,7 +1,7 @@
 import { getRequest, IAppRequest } from '@app/shared';
 import { ExecutionContext, Inject, Type, mixin } from '@nestjs/common';
 import memoize from 'lodash.memoize';
-import { IStrategy, IAuthGuard } from '../interfaces';
+import { IAuthStrategy, IAuthGuard } from '../interfaces';
 
 /**
  * Auth Guard
@@ -9,7 +9,7 @@ import { IStrategy, IAuthGuard } from '../interfaces';
  * @returns
  */
 export const AuthGuard: (StrategyClass: {
-  new (...args: any[]): IStrategy;
+  new (...args: any[]): IAuthStrategy;
 }) => Type<IAuthGuard> = memoize(createAuthGuard);
 
 /**
@@ -18,11 +18,14 @@ export const AuthGuard: (StrategyClass: {
  * @returns
  */
 function createAuthGuard(StrategyClass: {
-  new (...args: any[]): IStrategy;
+  new (...args: any[]): IAuthStrategy;
 }): Type<IAuthGuard> {
   class MixinBaseGuard implements IAuthGuard {
+    /**
+     * Strategy
+     */
     @Inject(StrategyClass)
-    private strategy: IStrategy;
+    private strategy: IAuthStrategy;
 
     /**
      * Can Activate
@@ -31,20 +34,7 @@ function createAuthGuard(StrategyClass: {
      * @returns
      */
     async canActivate(context: ExecutionContext): Promise<boolean> {
-      const request = this.getRequest(context);
-
-      const isAuthorized = await this.strategy.isAuthorized(request);
-      if (isAuthorized) {
-        return true;
-      }
-
-      const payload = await this.strategy.authenticate(request);
-      if (payload) {
-        await this.strategy.authorize(request, payload);
-        return true;
-      }
-
-      return false;
+      return this.strategy.authenticate(context);
     }
 
     /**

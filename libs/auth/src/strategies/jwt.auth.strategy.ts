@@ -1,17 +1,15 @@
-import { Nullable, IAppRequest, AppInputError, JwtService } from '@app/shared';
-import { Injectable } from '@nestjs/common';
+import { IAppRequest, JwtService, getRequest } from '@app/shared';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, ObjectLiteral, Repository } from 'typeorm';
 import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
-import { IStrategy } from '../interfaces';
+import { IAuthStrategy } from '../interfaces';
 
 /**
  * Jwt Auth Strategy
- *
- * @memberof Feature/Auth/Strategy
  */
 @Injectable()
-export class JwtAuthStrategy implements IStrategy {
+export class JwtAuthStrategy implements IAuthStrategy {
   /**
    * Users
    */
@@ -33,39 +31,30 @@ export class JwtAuthStrategy implements IStrategy {
   /**
    * Authenticate
    *
-   * @param {IAppRequest} request
+   * @param {ExecutionContext} context
    * @returns
    */
-  async authenticate(req: IAppRequest): Promise<Nullable<any>> {
-    try {
-      const token = this.getToken(req);
-      return this.jwtService.verifyToken(token);
-    } catch {
-      return null;
+  async authenticate(context: ExecutionContext): Promise<boolean> {
+    const request = getRequest(context);
+
+    if (!!request[REQUEST_AUTHORIZE_PROPERTY_KEY]) {
+      return true;
     }
-  }
 
-  /**
-   * Authorize the request using the given auth value.
-   *
-   * @param {IAppRequest} request
-   * @param {IAuthJwtPayload} payload
-   * @returns
-   */
-  async authorize(request: IAppRequest, { uid }: any): Promise<void> {
-    (request as any)[REQUEST_AUTHORIZE_PROPERTY_KEY] = await this.users.findOne(
-      uid,
-    );
-  }
+    const token = this.getToken(request);
 
-  /**
-   * Check whether the current request is authorized befor or not.
-   *
-   * @param {IAppRequest} request
-   * @returns
-   */
-  isAuthorized(request: IAppRequest): boolean | Promise<boolean> {
-    return !!(request as any)[REQUEST_AUTHORIZE_PROPERTY_KEY];
+    if (token) {
+      const { uid } = this.jwtService.verifyToken(token);
+
+      const user = await this.users.findOne(uid);
+      if (user) {
+        request[REQUEST_AUTHORIZE_PROPERTY_KEY] = user;
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -75,7 +64,7 @@ export class JwtAuthStrategy implements IStrategy {
    * @throws {AppInputError} in case of missing a valid authorization header.
    * @returns
    */
-  private getToken(request: IAppRequest): string {
+  private getToken(request: IAppRequest): string | null {
     const authorization = request.headers['authorization'];
 
     if (authorization) {
@@ -85,6 +74,6 @@ export class JwtAuthStrategy implements IStrategy {
       }
     }
 
-    throw new AppInputError('No valid authorization header has been provided.');
+    return null;
   }
 }

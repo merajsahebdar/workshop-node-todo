@@ -15,7 +15,6 @@ import {
   typeormConfig,
   jwtConfig,
 } from './configs';
-import { UserPolicyBuilder } from './policy-builders';
 import { AccountEntity, RefreshTokenEntity, UserEntity } from './entities';
 import { AuthResolver, UserResolver } from './resolvers';
 import {
@@ -110,7 +109,6 @@ import { MailerQueueProcessor } from './queue-processors';
     UserService,
     AccountService,
     CookieService,
-    UserPolicyBuilder,
     GetUserQueryHandler,
     CheckUserEmailAvailabilityCommandHandler,
     SignInCommandHandler,
