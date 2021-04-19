@@ -2,22 +2,14 @@
   "collection": "@nestjs/schematics",
   "compilerOptions": {
     "assets": [
-      "**/*.pug"
+      "**/*.pug",
+      "**/*.proto"
     ],
     "watchAssets": true,
     "webpack": true
   },
   "monorepo": true,
   "projects": {
-    "base": {
-      "type": "application",
-      "root": "apps/base",
-      "entryFile": "main",
-      "sourceRoot": "apps/base/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/base/tsconfig.app.json"
-      }
-    },
     "common": {
       "type": "library",
       "root": "libs/common",
@@ -34,6 +26,42 @@
       "sourceRoot": "libs/auth/src",
       "compilerOptions": {
         "tsConfigPath": "libs/auth/tsconfig.lib.json"
+      }
+    },
+    "account-api": {
+      "type": "application",
+      "root": "apps/account-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/account-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/account-api/tsconfig.app.json"
+      }
+    },
+    "gateway-api": {
+      "type": "application",
+      "root": "apps/gateway-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/gateway-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/gateway-api/tsconfig.app.json"
+      }
+    },
+    "mailing-svc": {
+      "type": "application",
+      "root": "apps/mailing-svc",
+      "entryFile": "main",
+      "sourceRoot": "apps/mailing-svc/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/mailing-svc/tsconfig.app.json"
+      }
+    },
+    "mailing-lib": {
+      "type": "library",
+      "root": "libs/mailing-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/mailing-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mailing-lib/tsconfig.lib.json"
       }
     }
   }

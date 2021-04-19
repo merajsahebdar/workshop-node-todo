@@ -47,7 +47,7 @@ export class HashService {
    */
   hmac(algorithm: string, data: IData): string {
     return crypto
-      .createHmac(algorithm, this.configService.get('app.key') as string)
+      .createHmac(algorithm, this.configService.get('common.appKey') as string)
       .update(this.normalizeData(data))
       .digest('hex');
   }

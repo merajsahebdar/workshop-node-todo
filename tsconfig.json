@@ -25,6 +25,12 @@
       ],
       "@app/auth/*": [
         "libs/auth/src/*"
+      ],
+      "@app/mailing-lib": [
+        "libs/mailing-lib/src"
+      ],
+      "@app/mailing-lib/*": [
+        "libs/mailing-lib/src/*"
       ]
     }
   }

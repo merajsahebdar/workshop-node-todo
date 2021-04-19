@@ -1,15 +1,14 @@
 {
   "name": "@shanbe/api",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Shanbe - API",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build base",
-    "start": "nest start base",
-    "start:dev": "nest start base --watch",
-    "start:debug": "nest start base --debug --watch",
-    "start:prod": "node dist/base/main",
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -50,7 +49,9 @@
       "@app/common/(.*)": "<rootDir>/libs/common/src/$1",
       "@app/common": "<rootDir>/libs/common/src",
       "@app/auth/(.*)": "<rootDir>/libs/auth/src/$1",
-      "@app/auth": "<rootDir>/libs/auth/src"
+      "@app/auth": "<rootDir>/libs/auth/src",
+      "@app/mailing-lib/(.*)": "<rootDir>/libs/mailing-lib/src/$1",
+      "@app/mailing-lib": "<rootDir>/libs/mailing-lib/src"
     }
   },
   "dependencies": {
@@ -62,6 +63,7 @@
     "@nestjs/core": "^7.6.13",
     "@nestjs/cqrs": "^7.0.1",
     "@nestjs/graphql": "^7.10.3",
+    "@nestjs/microservices": "^7.6.15",
     "@nestjs/platform-express": "^7.6.13",
     "@nestjs/typeorm": "^7.1.5",
     "apollo-server-errors": "^2.4.2",
@@ -78,6 +80,7 @@
     "graphql-tools": "^7.0.4",
     "jsonwebtoken": "^8.5.1",
     "lodash.memoize": "^4.1.2",
+    "nats": "^1.4.0",
     "nodemailer": "^6.5.0",
     "pg": "^8.5.1",
     "pug": "^3.0.2",

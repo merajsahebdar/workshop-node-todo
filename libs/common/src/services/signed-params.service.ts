@@ -38,7 +38,7 @@ export class SignedParamsService {
 
     const expires = addMinutes(
       new Date(),
-      this.configService.get('app.signedRequestExpires', 7200),
+      this.configService.get('common.signedRequestExpires', 7200),
     ).getTime();
 
     const signature = this.hashService.hmac(HASH_ALGORITHM, {
