@@ -1,31 +1,45 @@
 # Shanbe API
 
-_An API Boilerplate built on top of NestJS._
+_A Backend Boilerplate built on top of NestJS._
 
 ## Features
 
-- Authentication and Authorization
-- [Casbin](https://casbin.org) based Access Control
-- User Email Verification
-- Mailing Queue
+- [x] Authentication and Authorization
+- [x] [Casbin](https://casbin.org) based Access Control
+- [x] User Email Verification (Signed Request Method)
+- [x] Mailing Queue
 
 ## Requirements
 
-- `Node.JS ^14.0.0`
-- `PostgreSQL >=13.0.0`
+| Name         | Version    |
+| :----------- | :--------- |
+| `Node.JS`    | `^14.0.0`  |
+| `PostgreSQL` | `>=13.0.0` |
+| `Redis`      | `^5.0.0`   |
+| `NATS`       | `^2.0.0`   |
 
 ## Environment Variables
 
-- `APP_PORT`: The port number to start API on it
-- `APP_KEY`: A strong and safe key to use as hash salt
-- `APP_URL`: The url to the current running instance of API
-- `APP_AUTH_VERIFY_REDIRECT_URL`: The url to redirect after user's email verification
-- `TYPEORM_HOST`, `TYPEORM_PORT`, `TYPEORM_USERNAME`, `TYPEORM_PASSWORD`, `TYPEORM_DATABASE`: Database Connection Settings
-- `JWT_PUBLIC_KEY=storage/jwt/public.key`: Path to a public key to use as jwt signature
-- `JWT_PRIVATE_KEY=storage/jwt/private.key`: Path to a private key to use as jwt signature
-- `JWT_PRiVATE_KEY_PASSPHRASE=password`: The passphrase belongs to the jwt private key
-- `REDIS_HOST`, `REDIS_PORT`: Redis Connection Settings
-- `MAILER_TRANSPORT`, `MAILER_DEFAULT_SENDER`: Mail Settings
+| Variable                            | Description                                        |
+| :---------------------------------- | :------------------------------------------------- |
+| `APP_KEY`                           | A strong and safe key to use as hash salt          |
+| `APP_SIGNED_REQUEST_EXPIRES`        | The expiration time in minutes for signed requests |
+| `ACCOUNT_API_PORT`                  | The port number to start the Account API on it     |
+| `ACCOUNT_API_USER_VERIFICATION_URL` | The URL for user verification                      |
+| `GATEWAY_API_PORT`                  | The port number to start the Gateway API on it     |
+| `TYPEORM_HOST`                      | The host address of database                       |
+| `TYPEORM_PORT`                      | The port number of database                        |
+| `TYPEORM_USERNAME`                  | The username for database access                   |
+| `TYPEORM_PASSWORD`                  | The password for database access                   |
+| `TYPEORM_DATABASE`                  | Database Connection Settings                       |
+| `JWT_PUBLIC_KEY`                    | Path to a public key to use as jwt signature       |
+| `JWT_PRIVATE_KEY`                   | Path to a private key to use as jwt signature      |
+| `JWT_PRiVATE_KEY_PASSPHRASE`        | The passphrase belongs to the jwt private key      |
+| `REDIS_HOST`                        | The host address of Redis server                   |
+| `REDIS_PORT`                        | The port number of Redis server                    |
+| `NATS_URL`                          | The URL to the NATS server                         |
+| `MAILER_TRANSPORT`                  | The mailing connection transport                   |
+| `MAILER_DEFAULT_SENDER`             | The default email address to send mails from it    |
 
 ## Running the API
 
