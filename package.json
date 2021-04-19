@@ -1,10 +1,9 @@
 {
-  "name": "@shanbe/api",
+  "name": "@shanbe/backend",
   "private": true,
-  "version": "3.1.0",
-  "description": "Shanbe - API",
+  "version": "3.1.1",
+  "description": "Shanbe - Backend",
   "scripts": {
-    "prebuild": "rimraf dist",
     "build": "nest build",
     "start": "nest start",
     "start:dev": "nest start --watch",

@@ -1,4 +1,4 @@
-# Shanbe API
+# Shanbe Backend
 
 _A Backend Boilerplate built on top of NestJS._
 
