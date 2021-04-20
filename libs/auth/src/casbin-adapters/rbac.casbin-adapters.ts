@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
-import { FilteredAdapter, Helper, Model } from 'casbin';
+import { BatchAdapter, FilteredAdapter, Helper, Model } from 'casbin';
 import { Connection, FindConditions } from 'typeorm';
 import { CasbinRbacPolicyEntity } from '../entities';
 import { CasbinRbacPoliciesRepository } from '../repositories';
@@ -9,7 +9,7 @@ import { CasbinRbacPoliciesRepository } from '../repositories';
  * RBAC Casbin Adapter
  */
 @Injectable()
-export class RbacCasbinAdapter implements FilteredAdapter {
+export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Is Filtered
    */
@@ -41,6 +41,7 @@ export class RbacCasbinAdapter implements FilteredAdapter {
    *
    * @param {CasbinRbacPolicyEntity} policy
    * @param {Model} model
+   * @returns
    */
   private loadPolicyLine(line: CasbinRbacPolicyEntity, model: Model) {
     const value =
@@ -57,6 +58,7 @@ export class RbacCasbinAdapter implements FilteredAdapter {
    * Load Policy
    *
    * @param {Model} model
+   * @returns
    */
   async loadPolicy(model: Model): Promise<void> {
     const lines = await this.policies.find();
@@ -71,6 +73,7 @@ export class RbacCasbinAdapter implements FilteredAdapter {
    *
    * @param {Model} model
    * @param {FindConditions<CasbinRbacPolicyEntity>} filter
+   * @returns
    */
   async loadFilteredPolicy(
     model: Model,
@@ -185,10 +188,46 @@ export class RbacCasbinAdapter implements FilteredAdapter {
    * @param {string} sec
    * @param {string} ptype
    * @param {string[]} policy
+   * @returns
    */
-  async addPolicy(sec: string, ptype: string, policy: string[]): Promise<void> {
+  async addPolicy(_: string, ptype: string, policy: string[]): Promise<void> {
     const line = this.createPolicyLine(ptype, policy);
     await this.policies.save(line);
+  }
+
+  /**
+   * Add Policies
+   *
+   * @param {string} sec
+   * @param {string} ptype
+   * @param {string[][]} policies
+   * @returns
+   */
+  async addPolicies(
+    _: string,
+    ptype: string,
+    policies: string[][],
+  ): Promise<void> {
+    const lines: CasbinRbacPolicyEntity[] = [];
+    for (const policy of policies) {
+      const line = this.createPolicyLine(ptype, policy);
+      lines.push(line);
+    }
+
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.save(lines);
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
@@ -197,14 +236,38 @@ export class RbacCasbinAdapter implements FilteredAdapter {
    * @param {string} sec
    * @param {string} ptype
    * @param {string[]} policy
+   * @returns
    */
   async removePolicy(
-    sec: string,
+    _: string,
     ptype: string,
     policy: string[],
   ): Promise<void> {
     const line = this.createPolicyLine(ptype, policy);
     await this.policies.delete(line);
+  }
+
+  /**
+   * Remove Policies
+   */
+  public async removePolicies(_: string, ptype: string, policies: string[][]) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      for (const policy of policies) {
+        const line = this.createPolicyLine(ptype, policy);
+        await queryRunner.manager.delete(CasbinRbacPolicyEntity, line);
+      }
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**

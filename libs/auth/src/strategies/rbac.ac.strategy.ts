@@ -17,17 +17,16 @@ import { PermissionCreator, RbacPermission } from '../types';
 @Injectable()
 export class RbacStrategy implements IAcStrategy {
   /**
-   * Enforcer
-   */
-  @Inject(RBAC_ENFORCER)
-  private enforcer: Enforcer;
-
-  /**
    * Constructor
    *
+   * @param {Enforcer} enforcer
    * @param {Reflector} reflector
    */
-  constructor(private reflector: Reflector) {}
+  constructor(
+    @Inject(RBAC_ENFORCER)
+    private enforcer: Enforcer,
+    private reflector: Reflector,
+  ) {}
 
   /**
    * Check whether the authorized user has permission to continue or not.
