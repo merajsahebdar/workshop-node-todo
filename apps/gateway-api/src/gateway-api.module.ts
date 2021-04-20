@@ -1,8 +1,9 @@
 import { commonConfig, createApolloLogger } from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GraphQLGatewayModule } from '@nestjs/graphql';
+import { GATEWAY_BUILD_SERVICE, GraphQLGatewayModule } from '@nestjs/graphql';
 import { appConfig } from './configs';
+import { BuildServiceModule } from './modules';
 
 /**
  * Gateway API Module
@@ -17,7 +18,8 @@ import { appConfig } from './configs';
     }),
     // GraphQL
     GraphQLGatewayModule.forRootAsync({
-      inject: [ConfigService],
+      inject: [ConfigService, GATEWAY_BUILD_SERVICE],
+      imports: [BuildServiceModule],
       useFactory: (configService: ConfigService) => {
         const isDevelopment =
           configService.get('common.env', 'development') === 'development';
