@@ -7,14 +7,14 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { IAccountType } from '../interfaces';
+import { IAccountEntity } from '../interfaces';
 
 /**
  * Account Entity
  */
 @Entity('accounts')
 @Unique('UQ_USER', ['userId'])
-export class AccountEntity implements IAccountType {
+export class AccountEntity implements IAccountEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

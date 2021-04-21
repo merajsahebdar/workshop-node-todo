@@ -7,3 +7,8 @@ export interface INodeType {
   updatedAt: string;
   removedAt?: string;
 }
+
+/**
+ * Node Entity Interface
+ */
+export type INodeEntity = INodeType;

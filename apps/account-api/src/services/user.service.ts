@@ -127,7 +127,7 @@ export class UserService {
    * @returns
    */
   signAccessToken(user: UserEntity): string {
-    return this.jwtService.signToken({ uid: user.id, sub: user.toPlain() });
+    return this.jwtService.signToken({ uid: user.id, sub: user.toType() });
   }
 
   /**

@@ -1,4 +1,4 @@
-import { INodeType } from './node.type';
+import { INodeEntity, INodeType } from '@app/common';
 
 /**
  * User Type Interface
@@ -11,8 +11,8 @@ export interface IUserType extends INodeType {
 }
 
 /**
- * Unsafe User Type Interface
+ * User Entity Interface
  */
-export interface IUnsafeUserType extends IUserType {
+export interface IUserEntity extends INodeEntity, IUserType {
   password: string;
 }

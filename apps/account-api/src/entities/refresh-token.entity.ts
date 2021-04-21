@@ -6,13 +6,13 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { IRefreshTokenType } from '../interfaces';
+import { IRefreshTokenEntity } from '../interfaces';
 
 /**
  * Refresh Token Entity
  */
 @Entity({ name: 'refresh_tokens' })
-export class RefreshTokenEntity implements IRefreshTokenType {
+export class RefreshTokenEntity implements IRefreshTokenEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
