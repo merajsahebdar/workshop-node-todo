@@ -1,4 +1,4 @@
-import { AuthModule } from '@app/auth';
+import { AuthModule, CasbinManagementModule } from '@app/auth';
 import {
   IsUniqueConstraint,
   CommonModule,
@@ -80,6 +80,7 @@ import { AccountService, CookieService, UserService } from './services';
     // App Modules
     CommonModule,
     AuthModule,
+    CasbinManagementModule,
     MailingClientModule,
   ],
   providers: [
