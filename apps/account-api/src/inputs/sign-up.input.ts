@@ -1,8 +1,12 @@
 import { IsUnique, MatchWith } from '@app/common';
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail, Length, ValidateNested } from 'class-validator';
-import { UserEntity } from '../entities';
-import { ISignUpAccountInput, ISignUpInput } from '../interfaces';
+import { EmailEntity } from '../entities';
+import {
+  ISignUpAccountInput,
+  ISignUpEmailInput,
+  ISignUpInput,
+} from '../interfaces';
 
 /**
  * Sign Up Account Type
@@ -17,17 +21,23 @@ class SignUpAccountInput implements ISignUpAccountInput {
 }
 
 /**
+ * Sign Up Email Input Type
+ */
+@InputType()
+class SignUpEmailInput implements ISignUpEmailInput {
+  @Field()
+  @IsEmail(undefined, { message: 'The email address is not valid.' })
+  @IsUnique([EmailEntity, 'address'], {
+    message: 'The email address is not available.',
+  })
+  readonly address: string;
+}
+
+/**
  * Sign Up Input
  */
 @InputType()
 export class SignUpInput implements ISignUpInput {
-  @Field()
-  @IsEmail(undefined, { message: 'The email address is not valid.' })
-  @IsUnique([UserEntity, 'email'], {
-    message: 'The email address is not available.',
-  })
-  readonly email: string;
-
   @Field()
   @Length(8, undefined, {
     message: 'The password must contains at least 8 characters.',
@@ -39,6 +49,10 @@ export class SignUpInput implements ISignUpInput {
     message: 'Provided passwords must match.',
   })
   readonly passwordConfirm: string;
+
+  @Field(() => SignUpEmailInput)
+  @ValidateNested()
+  email: SignUpEmailInput;
 
   @Field(() => SignUpAccountInput)
   @ValidateNested()

@@ -29,15 +29,17 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
    * @returns
    */
   async execute(command: SignUpCommand): Promise<[UserEntity, string]> {
-    const [user, accessToken] = await this.userService.signUp(command.input);
+    const [user, email, accessToken] = await this.userService.signUp(
+      command.input,
+    );
 
     const account = await this.accountService.createAccount({
-      userId: user.id,
+      user: user,
       ...command.input.account,
     });
 
-    this.eventBus.publish(new UserSignedUpEvent(user));
-    this.eventBus.publish(new AccountCreatedEvent(account, user));
+    this.eventBus.publish(new UserSignedUpEvent(user, email, account));
+    this.eventBus.publish(new AccountCreatedEvent(user, email, account));
 
     return [user, accessToken];
   }

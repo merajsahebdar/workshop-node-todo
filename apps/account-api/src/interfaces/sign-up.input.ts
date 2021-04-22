@@ -7,11 +7,18 @@ export interface ISignUpAccountInput {
 }
 
 /**
+ * Sign Up Email Input Interface
+ */
+export interface ISignUpEmailInput {
+  address: string;
+}
+
+/**
  * Sign Up Input Interface
  */
 export interface ISignUpInput {
-  email: string;
   password: string;
   passwordConfirm: string;
+  email: ISignUpEmailInput;
   account: ISignUpAccountInput;
 }

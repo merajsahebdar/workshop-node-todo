@@ -1,16 +1,16 @@
 import { SignedParamsService } from '@app/common';
 import { AppInputError } from '@app/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { VerifyUserCommand } from '../commands';
-import { UserVerifiedEvent } from '../events';
+import { VerifyEmailCommand } from '../commands';
+import { EmailVerifiedEvent } from '../events';
 import { UserService } from '../services';
 
 /**
- * Verify User Command Handler
+ * Verify Email Command Handler
  */
-@CommandHandler(VerifyUserCommand)
-export class VerifyUserCommandHandler
-  implements ICommandHandler<VerifyUserCommand> {
+@CommandHandler(VerifyEmailCommand)
+export class VerifyEmailCommandHandler
+  implements ICommandHandler<VerifyEmailCommand> {
   /**
    * Constructor
    *
@@ -26,23 +26,23 @@ export class VerifyUserCommandHandler
   /**
    * Execute
    *
-   * @param {VerifyUserCommand} command
+   * @param {VerifyEmailCommand} command
    */
-  async execute(command: VerifyUserCommand): Promise<boolean> {
+  async execute(command: VerifyEmailCommand): Promise<boolean> {
     const { expires, signature, ...params } = command.input;
 
-    const user = await this.userService.findById(params.id);
-    if (user.isVerified) {
-      throw new AppInputError('The user has been verified.');
+    const email = await this.userService.findEmailById(params.id);
+    if (email.isVerified) {
+      throw new AppInputError('The user email has been verified.');
     }
 
     if (!this.signedParamsService.verify(expires, signature, params)) {
       throw new AppInputError('The signature is invalid, or has been expired.');
     }
 
-    await this.userService.toggleVerification(user);
+    await this.userService.toggleVerification(email);
 
-    this.eventBus.publish(new UserVerifiedEvent(user));
+    this.eventBus.publish(new EmailVerifiedEvent(email));
 
     return true;
   }

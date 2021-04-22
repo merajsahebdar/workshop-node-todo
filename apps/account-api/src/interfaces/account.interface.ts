@@ -1,4 +1,5 @@
 import { INodeEntity, INodeType } from '@app/common';
+import { IUserEntity } from './user.interface';
 
 /**
  * Account Type Interface
@@ -12,5 +13,5 @@ export interface IAccountType extends INodeType {
  * Account Entity Interface
  */
 export interface IAccountEntity extends INodeEntity, IAccountType {
-  userId: string;
+  user: IUserEntity;
 }

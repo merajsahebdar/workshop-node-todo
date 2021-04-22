@@ -7,37 +7,34 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { IUserEntity, IUserType } from '../interfaces';
+import { AccountEntity } from './account.entity';
+import { EmailEntity } from './email.entity';
+import { RefreshTokenEntity } from './refresh-token.entity';
 
 /**
  * User Entity
  */
 @Entity('users')
-@Unique('UQ_EMAIL', ['email'])
 export class UserEntity implements IUserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('varchar')
-  email: string;
-
-  @Column('varchar')
+  @Column({ type: 'varchar' })
   password: string;
 
   private cachedPassword: string;
 
-  @Column('boolean', { nullable: false, default: true })
+  @Column({ type: 'boolean', nullable: false, default: true })
   isActivated: boolean;
 
-  @Column('boolean', { nullable: false, default: false })
+  @Column({ type: 'boolean', nullable: false, default: false })
   isBlocked: boolean;
-
-  @Column('boolean', { nullable: false, default: false })
-  isVerified: boolean;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: string;
@@ -48,6 +45,15 @@ export class UserEntity implements IUserEntity {
   @DeleteDateColumn({ type: 'timestamp with time zone' })
   removedAt: string;
 
+  @OneToMany(() => EmailEntity, (email) => email.user)
+  emails: EmailEntity[];
+
+  @OneToMany(() => RefreshTokenEntity, (refreshToken) => refreshToken.user)
+  refreshTokens: RefreshTokenEntity[];
+
+  @OneToOne(() => AccountEntity)
+  account: AccountEntity;
+
   /**
    * Convert the instance to a plain user type object.
    *
@@ -56,10 +62,9 @@ export class UserEntity implements IUserEntity {
   toType(): IUserType {
     return {
       id: this.id,
-      email: this.email,
+      emails: this.emails,
       isActivated: this.isActivated,
       isBlocked: this.isBlocked,
-      isVerified: this.isVerified,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       removedAt: this.removedAt,

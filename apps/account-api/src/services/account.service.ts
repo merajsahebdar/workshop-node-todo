@@ -2,7 +2,7 @@ import { AppInputError } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial } from 'typeorm';
-import { AccountEntity } from '../entities';
+import { AccountEntity, UserEntity } from '../entities';
 import { AccountsRepository } from '../repositories';
 
 /**
@@ -39,7 +39,11 @@ export class AccountService {
    * @returns
    */
   async findByUserId(userId: string): Promise<AccountEntity> {
-    const user = await this.accounts.findOne({ where: { userId } });
+    const user = await this.accounts
+      .createQueryBuilder('Account')
+      .leftJoin(UserEntity, 'User', 'User.id = Account.user')
+      .where('User.id = :userId', { userId })
+      .getOne();
 
     if (user) {
       return user;

@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { RefreshTokenEntity } from '../entities/refresh-token.entity';
+import { RefreshTokenEntity } from '../entities';
 
 /**
  * Refresh Token Repositoy

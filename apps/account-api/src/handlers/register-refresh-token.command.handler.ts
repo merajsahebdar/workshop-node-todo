@@ -1,5 +1,6 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { RegisterRefreshTokenCommand } from '../commands';
+import { RefreshTokenCreatedEvent } from '../events';
 import { UserService } from '../services';
 
 /**
@@ -11,9 +12,10 @@ export class RegisterRefreshTokenCommandHandler
   /**
    * Constructor
    *
+   * @param {EventBus} eventBus
    * @param {UserService} userService
    */
-  constructor(private userService: UserService) {}
+  constructor(private eventBus: EventBus, private userService: UserService) {}
 
   /**
    * Execute
@@ -22,10 +24,16 @@ export class RegisterRefreshTokenCommandHandler
    * @returns
    */
   async execute(command: RegisterRefreshTokenCommand) {
-    return this.userService.signRefreshToken(
-      command.user,
-      command.clientIp,
-      command.userAgent,
+    const refreshToken = await this.userService.createRefreshToken({
+      user: command.user,
+      clientIp: command.clientIp,
+      userAgent: command.userAgent,
+    });
+
+    this.eventBus.publish(
+      new RefreshTokenCreatedEvent(command.user, refreshToken),
     );
+
+    return this.userService.signRefreshToken(refreshToken);
   }
 }

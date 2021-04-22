@@ -5,8 +5,9 @@ import {
   ID,
   ObjectType,
 } from '@nestjs/graphql';
-import { IUserType } from '../interfaces';
+import { IEmailType, IUserType } from '../interfaces';
 import { AccountType } from './account.type';
+import { EmailType } from './email.type';
 
 /**
  * User Type
@@ -17,8 +18,8 @@ export class UserType implements IUserType {
   @Field(() => ID)
   id: string;
 
-  @Field()
-  email: string;
+  @Field(() => [EmailType])
+  emails: IEmailType[];
 
   @Field()
   isActivated: boolean;

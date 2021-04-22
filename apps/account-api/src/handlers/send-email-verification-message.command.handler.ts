@@ -4,14 +4,14 @@ import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { join } from 'path';
 import { stringify } from 'qs';
-import { SendUserVerificationEmailCommand } from '../commands';
+import { SendEmailVerificationMessageCommand } from '../commands';
 
 /**
- * Send User Verification Email Command Handler
+ * Send Email Verification Email Command Handler
  */
-@CommandHandler(SendUserVerificationEmailCommand)
-export class SendUserVerificationEmailCommandHandler
-  implements ICommandHandler<SendUserVerificationEmailCommand> {
+@CommandHandler(SendEmailVerificationMessageCommand)
+export class SendEmailVerificationMessageCommandHandler
+  implements ICommandHandler<SendEmailVerificationMessageCommand> {
   /**
    * Constructor
    *
@@ -30,15 +30,19 @@ export class SendUserVerificationEmailCommandHandler
    *
    * @param {SendUserVerificationEmailCommand} command
    */
-  async execute({ user }: SendUserVerificationEmailCommand): Promise<void> {
+  async execute({
+    account,
+    email: { id, address },
+  }: SendEmailVerificationMessageCommand): Promise<void> {
     const [expires, signature] = this.signedParamsService.sign({
-      id: user.id,
-      email: user.email,
+      id,
+      address,
     });
 
     const verificationURL = new URL(
       stringify(
         {
+          address,
           expires,
           signature,
         },
@@ -48,10 +52,10 @@ export class SendUserVerificationEmailCommandHandler
     );
 
     await this.mailingService.sendMail({
-      to: user.email,
+      to: address,
       template: join(__dirname, 'templates', 'verification.pug'),
       context: {
-        user,
+        account,
         verificationURL: verificationURL.toString(),
       },
     });

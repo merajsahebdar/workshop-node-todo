@@ -3,33 +3,34 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { IAccountEntity } from '../interfaces';
+import { IEmailEntity } from '../interfaces';
 import { UserEntity } from './user.entity';
 
 /**
- * Account Entity
+ * Email Entity
  */
-@Entity('accounts')
-@Unique(['user'])
-export class AccountEntity implements IAccountEntity {
+@Entity({ name: 'emails' })
+@Unique(['address'])
+export class EmailEntity implements IEmailEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => UserEntity, (user) => user.id)
-  @JoinColumn()
+  @ManyToOne(() => UserEntity, (user) => user.id)
   user: UserEntity;
 
   @Column({ type: 'varchar' })
-  forename: string;
+  address: string;
 
-  @Column({ type: 'varchar' })
-  surname: string;
+  @Column({ type: 'boolean', default: false })
+  isPrimary: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  isVerified: boolean;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: string;

@@ -1,13 +1,13 @@
 import { INodeEntity, INodeType } from '@app/common';
+import { IEmailType } from './email.interface';
 
 /**
  * User Type Interface
  */
 export interface IUserType extends INodeType {
-  email: string;
+  emails: IEmailType[];
   isActivated: boolean;
   isBlocked: boolean;
-  isVerified: boolean;
 }
 
 /**

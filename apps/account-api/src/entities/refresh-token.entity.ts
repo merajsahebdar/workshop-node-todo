@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  ManyToOne,
 } from 'typeorm';
 import { IRefreshTokenEntity } from '../interfaces';
+import { UserEntity } from './user.entity';
 
 /**
  * Refresh Token Entity
@@ -16,14 +18,14 @@ export class RefreshTokenEntity implements IRefreshTokenEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('uuid')
-  userId: string;
-
-  @Column('varchar')
+  @Column({ type: 'varchar' })
   userAgent: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar' })
   clientIp: string;
+
+  @ManyToOne(() => UserEntity, (user) => user.id)
+  user: UserEntity;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: string;

@@ -4,12 +4,20 @@ import {
   JwtAuthStrategy,
   UsePermissions,
   RbacStrategy,
+  REFRESH_TOKEN_COOKIE_KEY,
+  RefreshTokenAuthStrategy,
+  AuthorizedUser,
 } from '@app/auth';
-import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/common';
+import {
+  GqlValidationPipe,
+  GqlAppInputErrorFilter,
+  IAppContext,
+} from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Args,
+  Context,
   Mutation,
   Parent,
   Query,
@@ -18,15 +26,25 @@ import {
 } from '@nestjs/graphql';
 import { GraphQLBoolean } from 'graphql';
 import {
-  VerifyUserCommand,
-  CheckUserEmailAvailabilityCommand,
+  VerifyEmailCommand,
+  CheckEmailAvailabilityCommand,
+  RegisterRefreshTokenCommand,
+  SignUpCommand,
+  SignInCommand,
+  SignAccessTokenCommand,
 } from '../commands';
-import { CheckUserEmailAvailabilityInput, VerifyUserInput } from '../inputs';
-import { UserType } from '../types';
+import {
+  CheckEmailAvailabilityInput,
+  SignInInput,
+  SignUpInput,
+  VerifyEmailInput,
+} from '../inputs';
+import { EmailType, UserType } from '../types';
 import { AccountType } from '../types/account.type';
 import { GetUserQuery } from '../queries';
-import { AccountService } from '../services';
+import { AccountService, CookieService, UserService } from '../services';
 import { UserArgs } from '../args';
+import { UserEntity } from '../entities';
 
 /**
  * User Resolver
@@ -40,13 +58,89 @@ export class UserResolver {
    *
    * @param {QueryBus} queryBus
    * @param {CommandBus} commandBus
+   * @param {CookieService} cookieService
+   * @param {UserService} userService
    * @param {AccountService} accountService
    */
   constructor(
     private queryBus: QueryBus,
     private commandBus: CommandBus,
+    private cookieService: CookieService,
+    private userService: UserService,
     private accountService: AccountService,
   ) {}
+
+  /**
+   * Return a new signed access token from given refresh token.
+   *
+   * @param {UserEntity} user
+   * @returns
+   */
+  @UseGuards(AuthGuard(RefreshTokenAuthStrategy))
+  @Mutation(() => String)
+  async refreshToken(@AuthorizedUser() user: UserEntity): Promise<string> {
+    return this.commandBus.execute(new SignAccessTokenCommand(user));
+  }
+
+  /**
+   * Sign In
+   *
+   * @param {SignInInput} input
+   * @returns
+   */
+  @Mutation(() => String)
+  async signIn(
+    @Context() { req }: IAppContext,
+    @Args('input') input: SignInInput,
+  ): Promise<string> {
+    // Login
+    const [user, accessToken] = await this.commandBus.execute(
+      new SignInCommand(input),
+    );
+
+    // Register refresh token
+    const refreshToken = await this.commandBus.execute(
+      new RegisterRefreshTokenCommand(
+        user,
+        req.clientIp,
+        req.headers['user-agent'],
+      ),
+    );
+
+    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+
+    return accessToken;
+  }
+
+  /**
+   * Sign Up
+   *
+   * @param {SignUpInput} input
+   * @returns
+   */
+  @Mutation(() => String)
+  async signUp(
+    @Context() { req }: IAppContext,
+    @Args('input') input: SignUpInput,
+  ): Promise<string> {
+    // Register
+    const [user, accessToken] = await this.commandBus.execute(
+      new SignUpCommand(input),
+    );
+
+    // Register refresh token
+    const refreshToken = await this.commandBus.execute(
+      new RegisterRefreshTokenCommand(
+        user,
+        req.clientIp,
+        req.headers['user-agent'],
+      ),
+    );
+
+    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+
+    return accessToken;
+  }
 
   /**
    * Check whether the provided email address is available for registeration
@@ -57,23 +151,21 @@ export class UserResolver {
    */
   @Mutation(() => GraphQLBoolean)
   async isUserEmailAvailable(
-    @Args('input') input: CheckUserEmailAvailabilityInput,
+    @Args('input') input: CheckEmailAvailabilityInput,
   ): Promise<boolean> {
-    return this.commandBus.execute(
-      new CheckUserEmailAvailabilityCommand(input),
-    );
+    return this.commandBus.execute(new CheckEmailAvailabilityCommand(input));
   }
 
   /**
    * Verify User
    *
-   * @param {VerifyUserInput} input
+   * @param {VerifyEmailInput} input
    * @returns
    */
   @Mutation(() => GraphQLBoolean)
   @UseGuards(AuthGuard(JwtAuthStrategy))
-  async verifyUser(@Args('input') input: VerifyUserInput): Promise<boolean> {
-    return this.commandBus.execute(new VerifyUserCommand(input));
+  async verifyEmail(@Args('input') input: VerifyEmailInput): Promise<boolean> {
+    return this.commandBus.execute(new VerifyEmailCommand(input));
   }
 
   /**
@@ -92,10 +184,22 @@ export class UserResolver {
   /**
    * User's Account
    *
+   * @param {UserType} parent
    * @returns
    */
   @ResolveField(() => AccountType, { name: 'account' })
   async getAccount(@Parent() { id }: UserType): Promise<AccountType> {
     return this.accountService.findByUserId(id);
+  }
+
+  /**
+   * User's Emails
+   *
+   * @param {UserType} parent
+   * @returns
+   */
+  @ResolveField(() => [EmailType], { name: 'emails' })
+  async getEmails(@Parent() { id }: UserType): Promise<EmailType[]> {
+    return this.userService.findEmailsByUserId(id);
   }
 }

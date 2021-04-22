@@ -16,9 +16,6 @@ export class AccountType implements IAccountType {
   @Field(() => ID)
   id: string;
 
-  @Field(() => ID)
-  userId: string;
-
   @Field()
   forename: string;
 

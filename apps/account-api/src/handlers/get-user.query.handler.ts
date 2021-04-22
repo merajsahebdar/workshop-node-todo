@@ -21,6 +21,6 @@ export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
    * @param {GetUserQuery} query
    */
   async execute(query: GetUserQuery): Promise<IUserType> {
-    return this.userService.findById(query.id);
+    return this.userService.findUserById(query.id);
   }
 }

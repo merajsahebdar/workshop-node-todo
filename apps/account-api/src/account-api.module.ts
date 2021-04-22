@@ -16,17 +16,22 @@ import { GraphQLFederationModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { appConfig } from './configs';
-import { AccountEntity, RefreshTokenEntity, UserEntity } from './entities';
-import { AuthResolver, UserResolver } from './resolvers';
 import {
-  VerifyUserCommandHandler,
+  AccountEntity,
+  EmailEntity,
+  RefreshTokenEntity,
+  UserEntity,
+} from './entities';
+import { UserResolver } from './resolvers';
+import {
+  VerifyEmailCommandHandler,
   GetUserQueryHandler,
-  CheckUserEmailAvailabilityCommandHandler,
+  CheckEmailAvailabilityCommandHandler,
   SignAccessTokenCommandHandler,
   SignInCommandHandler,
   SignUpCommandHandler,
-  SendUserVerificationEmailCommandHandler,
   RegisterRefreshTokenCommandHandler,
+  SendEmailVerificationMessageCommandHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
 import { AccountService, CookieService, UserService } from './services';
@@ -57,7 +62,12 @@ import { AccountService, CookieService, UserService } from './services';
         synchronize: true,
       }),
     }),
-    TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity, AccountEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      EmailEntity,
+      RefreshTokenEntity,
+      AccountEntity,
+    ]),
     // GraphQL
     GraphQLFederationModule.forRootAsync({
       inject: [ConfigService],
@@ -84,20 +94,23 @@ import { AccountService, CookieService, UserService } from './services';
     MailingClientModule,
   ],
   providers: [
+    // Services
     UserService,
     AccountService,
     CookieService,
+    // Handlers
     GetUserQueryHandler,
-    CheckUserEmailAvailabilityCommandHandler,
+    CheckEmailAvailabilityCommandHandler,
     SignInCommandHandler,
     SignUpCommandHandler,
     SignAccessTokenCommandHandler,
-    SendUserVerificationEmailCommandHandler,
+    SendEmailVerificationMessageCommandHandler,
     RegisterRefreshTokenCommandHandler,
-    VerifyUserCommandHandler,
+    VerifyEmailCommandHandler,
+    // Sagas
     UserSaga,
+    // Resolvers
     UserResolver,
-    AuthResolver,
     IsUniqueConstraint,
   ],
 })

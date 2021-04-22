@@ -1,12 +1,12 @@
-import { IEvent } from '@nestjs/cqrs';
+import { ICommand } from '@nestjs/cqrs';
 import { AccountEntity, EmailEntity, UserEntity } from '../entities';
 
 /**
- * Account Created Event
+ * Send Email Verification Message Command
  */
-export class AccountCreatedEvent implements IEvent {
+export class SendEmailVerificationMessageCommand implements ICommand {
   /**
-   * Constructo
+   * Constructor
    *
    * @param {UserEntity} user
    * @param {EmailEntity} email

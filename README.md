@@ -7,6 +7,7 @@ _A Backend Boilerplate built on top of NestJS._
 - [x] Authentication and Authorization
 - [x] [Casbin](https://casbin.org) based Access Control
 - [x] User Email Verification (Signed Request Method)
+- [x] Multiple email address for each user
 - [x] Mailing Queue
 
 ## Requirements
