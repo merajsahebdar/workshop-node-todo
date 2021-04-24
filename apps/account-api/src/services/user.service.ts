@@ -1,20 +1,9 @@
-import { AppInputError, JwtService } from '@app/common';
+import { AppInputError } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial } from 'typeorm';
-import {
-  UserEntity,
-  RefreshTokenEntity,
-  EmailEntity,
-  OAuthTicketEntity,
-} from '../entities';
-import {
-  EmailsRepository,
-  OAuthTicketsRepository,
-  RefreshTokensRepository,
-  UsersRepository,
-} from '../repositories';
-import { AccountService } from './account.service';
+import { UserEntity, EmailEntity } from '../entities';
+import { UsersRepository } from '../repositories';
 
 /**
  * User Service
@@ -22,20 +11,10 @@ import { AccountService } from './account.service';
 @Injectable()
 export class UserService {
   /**
-   * Constructor
-   *
-   * @param {UsersRepository} users
+   * Users Repository
    */
-  constructor(
-    @InjectRepository(UserEntity) private users: UsersRepository,
-    @InjectRepository(RefreshTokenEntity)
-    private refreshTokens: RefreshTokensRepository,
-    @InjectRepository(EmailEntity) private emails: EmailsRepository,
-    @InjectRepository(OAuthTicketEntity)
-    private oauthTickets: OAuthTicketsRepository,
-    private accountService: AccountService,
-    private jwtService: JwtService,
-  ) {}
+  @InjectRepository(UserEntity)
+  private users: UsersRepository;
 
   /**
    * Create User
@@ -89,17 +68,5 @@ export class UserService {
     }
 
     throw new AppInputError(`No user found with email address: '${address}'.`);
-  }
-
-  /**
-   * Create Refresh Token
-   *
-   * @param {DeepPartial<RefreshTokenEntity>} props
-   * @returns
-   */
-  async createRefreshToken(
-    props: DeepPartial<RefreshTokenEntity>,
-  ): Promise<RefreshTokenEntity> {
-    return this.refreshTokens.save(this.refreshTokens.create(props));
   }
 }

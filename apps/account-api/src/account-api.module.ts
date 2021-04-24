@@ -47,6 +47,7 @@ import {
   AuthService,
   EmailService,
   OAuthTicketService,
+  RefreshTokenService,
   UserService,
 } from './services';
 import { RequestOAuthCommandHandler } from './handlers/request-oauth.command.handler';
@@ -111,6 +112,7 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     AccountService,
     EmailService,
     OAuthTicketService,
+    RefreshTokenService,
     AuthService,
     // Handlers
     GetUserQueryHandler,
