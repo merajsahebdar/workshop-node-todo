@@ -4,10 +4,13 @@ _A Backend Boilerplate built on top of NestJS._
 
 ## Features
 
+- [x] Microservice and CQRS Design
+- [x] GraphQL, Apollo Federation
 - [x] Authentication and Authorization
-- [x] [Casbin](https://casbin.org) based Access Control
+- [x] OAuth and SSO (Google, GitHub, Facebook)
 - [x] User Email Verification (Signed Request Method)
 - [x] Multiple email address for each user
+- [x] [Casbin](https://casbin.org) based Access Control
 - [x] Mailing Queue
 
 ## Requirements
@@ -41,6 +44,10 @@ _A Backend Boilerplate built on top of NestJS._
 | `NATS_URL`                          | The URL to the NATS server                         |
 | `MAILER_TRANSPORT`                  | The mailing connection transport                   |
 | `MAILER_DEFAULT_SENDER`             | The default email address to send mails from it    |
+
+## Todos
+
+- [ ] Add Tests
 
 ## Running the API
 
