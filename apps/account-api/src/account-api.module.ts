@@ -40,7 +40,13 @@ import {
   SendEmailVerificationMessageCommandHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
-import { AccountService, UserService } from './services';
+import {
+  AccountService,
+  AuthService,
+  EmailService,
+  OAuthTicketService,
+  UserService,
+} from './services';
 import { RequestOAuthCommandHandler } from './handlers/request-oauth.command.handler';
 import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command.handler';
 
@@ -101,6 +107,9 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     // Services
     UserService,
     AccountService,
+    EmailService,
+    OAuthTicketService,
+    AuthService,
     // Handlers
     GetUserQueryHandler,
     CheckEmailAvailabilityCommandHandler,

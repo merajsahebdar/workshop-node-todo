@@ -2,7 +2,7 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { UserEntity } from '../entities';
 import { SignUpCommand } from '../commands';
 import { AccountCreatedEvent, UserSignedUpEvent } from '../events';
-import { AccountService, UserService } from '../services';
+import { AuthService } from '../services';
 
 /**
  * Sign Up Command Handler
@@ -13,14 +13,9 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
    * Constructor
    *
    * @param {EventBus} eventBus
-   * @param {UserService} userService
-   * @param {AccountService} accountService
+   * @param {AuthService} authService
    */
-  constructor(
-    private eventBus: EventBus,
-    private userService: UserService,
-    private accountService: AccountService,
-  ) {}
+  constructor(private eventBus: EventBus, private authService: AuthService) {}
 
   /**
    * Execute
@@ -28,15 +23,16 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
    * @param {SignUpCommand} command
    * @returns
    */
-  async execute(command: SignUpCommand): Promise<[UserEntity, string]> {
-    const [user, email, accessToken] = await this.userService.signUp(
-      command.input,
+  async execute({ input }: SignUpCommand): Promise<[UserEntity, string]> {
+    const { user, email, account } = await this.authService.signUp(
+      {
+        password: input.password,
+      },
+      input.email,
+      input.account,
     );
 
-    const account = await this.accountService.createAccount({
-      user: user,
-      ...command.input.account,
-    });
+    const accessToken = this.authService.signAccessToken(user);
 
     this.eventBus.publish(new UserSignedUpEvent(user, email, account));
     this.eventBus.publish(new AccountCreatedEvent(user, email, account));

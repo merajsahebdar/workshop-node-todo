@@ -3,7 +3,12 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { AuthorizeOAuthCommand } from '../commands';
 import { UserEntity } from '../entities';
 import { OAuthTicketCreatedEvent, UserSignedUpEvent } from '../events';
-import { AccountService, UserService } from '../services';
+import {
+  AuthService,
+  EmailService,
+  OAuthTicketService,
+  UserService,
+} from '../services';
 
 /**
  * Authorize OAuth Command Handler
@@ -16,14 +21,18 @@ export class AuthorizeOAuthCommandHandler
    *
    * @param {EventBus} eventBus
    * @param {OAuthService} oauthService
+   * @param {AuthService} authService
    * @param {UserService} userService
-   * @param {AccountService} accountService
+   * @param {EmailService} emailService
+   * @param {OAuthTicketService} oauthTicketService
    */
   constructor(
     private eventBus: EventBus,
     private oauthService: OAuthService,
+    private authService: AuthService,
     private userService: UserService,
-    private accountService: AccountService,
+    private emailService: EmailService,
+    private oauthTicketService: OAuthTicketService,
   ) {}
 
   /**
@@ -32,58 +41,54 @@ export class AuthorizeOAuthCommandHandler
    * @param {AuthorizeOAuthCommand} command
    * @returns
    */
-  async execute(command: AuthorizeOAuthCommand): Promise<[UserEntity, string]> {
+  async execute({
+    input,
+  }: AuthorizeOAuthCommand): Promise<[UserEntity, string]> {
     const [
-      oauthUser,
+      { email: oauthEmail, account: oauthAccount },
       encryptedTicketData,
-    ] = await this.oauthService.authorizeOAuth(
-      command.input.provider,
-      command.input.code,
+    ] = await this.oauthService.authorizeOAuth(input.provider, input.code);
+
+    const isRegistered = await this.emailService.isRegistered(
+      oauthEmail.address,
     );
 
-    const isRegistered = await this.userService.emailExists({
-      address: oauthUser.email.address,
-    });
-
     if (isRegistered) {
-      const user = await this.userService.findUserByEmailAddress(
-        oauthUser.email.address,
+      const user = await this.userService.findByEmailAddress(
+        oauthEmail.address,
       );
 
-      await this.userService.updateOAuthTicketByUser(user, {
-        provider: command.input.provider,
+      await this.oauthTicketService.updateOAuthTicketByUser(user, {
+        provider: input.provider,
         encryptedTicketData,
       });
 
-      return [user, this.userService.signAccessToken(user)];
+      return [user, this.authService.signAccessToken(user)];
     } else {
       // Create User
-      const user = await this.userService.createUser({
-        isActivated: true,
-        isBlocked: false,
-      });
+      const { user, email, account } = await this.authService.signUp(
+        {},
+        {
+          address: oauthEmail.address,
+          isVerified: true,
+        },
+        {
+          nickname: oauthAccount.nickname,
+        },
+      );
 
-      const email = await this.userService.createEmail({
+      const oauthTicket = await this.oauthTicketService.updateOAuthTicketByUser(
         user,
-        address: oauthUser.email.address,
-        isVerified: true,
-        isPrimary: true,
-      });
-
-      const account = await this.accountService.createAccount({
-        user,
-        nickname: oauthUser.account.nickname,
-      });
-
-      const oauthTicket = await this.userService.updateOAuthTicketByUser(user, {
-        provider: command.input.provider,
-        encryptedTicketData,
-      });
+        {
+          provider: input.provider,
+          encryptedTicketData,
+        },
+      );
 
       this.eventBus.publish(new UserSignedUpEvent(user, email, account));
       this.eventBus.publish(new OAuthTicketCreatedEvent(oauthTicket, user));
 
-      return [user, this.userService.signAccessToken(user)];
+      return [user, this.authService.signAccessToken(user)];
     }
   }
 }

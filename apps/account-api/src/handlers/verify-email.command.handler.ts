@@ -3,7 +3,7 @@ import { AppInputError } from '@app/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { VerifyEmailCommand } from '../commands';
 import { EmailVerifiedEvent } from '../events';
-import { UserService } from '../services';
+import { EmailService } from '../services';
 
 /**
  * Verify Email Command Handler
@@ -14,12 +14,13 @@ export class VerifyEmailCommandHandler
   /**
    * Constructor
    *
-   * @param {UserService} userService
+   * @param {EventBus} eventBus
+   * @param {EmailService} emailService
    * @param {SignedParamsService} signedParamsService
    */
   constructor(
     private eventBus: EventBus,
-    private userService: UserService,
+    private emailService: EmailService,
     private signedParamsService: SignedParamsService,
   ) {}
 
@@ -31,7 +32,7 @@ export class VerifyEmailCommandHandler
   async execute(command: VerifyEmailCommand): Promise<boolean> {
     const { expires, signature, ...params } = command.input;
 
-    const email = await this.userService.findEmailById(params.id);
+    const email = await this.emailService.findById(params.id);
     if (email.isVerified) {
       throw new AppInputError('The user email has been verified.');
     }
@@ -40,7 +41,7 @@ export class VerifyEmailCommandHandler
       throw new AppInputError('The signature is invalid, or has been expired.');
     }
 
-    await this.userService.toggleVerification(email);
+    await this.emailService.toggleVerification(email);
 
     this.eventBus.publish(new EmailVerifiedEvent(email));
 

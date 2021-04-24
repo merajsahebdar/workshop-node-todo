@@ -43,7 +43,7 @@ import {
 import { EmailType, UserType } from '../types';
 import { AccountType } from '../types/account.type';
 import { GetUserQuery } from '../queries';
-import { AccountService, UserService } from '../services';
+import { AccountService, EmailService } from '../services';
 import { UserArgs } from '../args';
 import { UserEntity } from '../entities';
 import { RequestOAuthInput } from '../inputs/request-oauth.input';
@@ -64,14 +64,14 @@ export class UserResolver {
    * @param {QueryBus} queryBus
    * @param {CommandBus} commandBus
    * @param {CookieService} cookieService
-   * @param {UserService} userService
+   * @param {EmailService} emailService
    * @param {AccountService} accountService
    */
   constructor(
     private queryBus: QueryBus,
     private commandBus: CommandBus,
     private cookieService: CookieService,
-    private userService: UserService,
+    private emailService: EmailService,
     private accountService: AccountService,
   ) {}
 
@@ -245,6 +245,6 @@ export class UserResolver {
    */
   @ResolveField(() => [EmailType], { name: 'emails' })
   async getEmails(@Parent() { id }: UserType): Promise<EmailType[]> {
-    return this.userService.findEmailsByUserId(id);
+    return this.emailService.findManyByUserId(id);
   }
 }

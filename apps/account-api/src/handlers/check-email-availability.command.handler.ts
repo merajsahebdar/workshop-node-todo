@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CheckEmailAvailabilityCommand } from '../commands';
-import { UserService } from '../services';
+import { EmailService } from '../services';
 
 /**
  * Check Email Availability Command Handler
@@ -11,9 +11,9 @@ export class CheckEmailAvailabilityCommandHandler
   /**
    * Constructor
    *
-   * @param {UserService} userService
+   * @param {AuthService} authService
    */
-  constructor(private userService: UserService) {}
+  constructor(private emailService: EmailService) {}
 
   /**
    * Execute
@@ -21,7 +21,7 @@ export class CheckEmailAvailabilityCommandHandler
    * @param {CheckEmailAvailabilityCommand} command
    * @returns
    */
-  async execute(command: CheckEmailAvailabilityCommand): Promise<boolean> {
-    return !this.userService.emailExists({ address: command.input.email });
+  async execute({ input }: CheckEmailAvailabilityCommand): Promise<boolean> {
+    return !(await this.emailService.isRegistered(input.email));
   }
 }

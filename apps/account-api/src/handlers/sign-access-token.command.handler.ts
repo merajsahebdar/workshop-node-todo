@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SignAccessTokenCommand } from '../commands';
-import { UserService } from '../services';
+import { AuthService } from '../services';
 
 /**
  * Sign Access Token Command Handler
@@ -11,9 +11,9 @@ export class SignAccessTokenCommandHandler
   /**
    * Constructor
    *
-   * @param {UserService} userService
+   * @param {AuthService} authService
    */
-  constructor(private userService: UserService) {}
+  constructor(private authService: AuthService) {}
 
   /**
    * Execute
@@ -21,7 +21,7 @@ export class SignAccessTokenCommandHandler
    * @param {SignAccessTokenCommand} command
    * @returns
    */
-  async execute(command: SignAccessTokenCommand): Promise<string> {
-    return this.userService.signAccessToken(command.user);
+  async execute({ user }: SignAccessTokenCommand): Promise<string> {
+    return this.authService.signAccessToken(user);
   }
 }
