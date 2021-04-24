@@ -44,6 +44,15 @@ _A Backend Boilerplate built on top of NestJS._
 | `NATS_URL`                          | The URL to the NATS server                         |
 | `MAILER_TRANSPORT`                  | The mailing connection transport                   |
 | `MAILER_DEFAULT_SENDER`             | The default email address to send mails from it    |
+| `OAUTH_GOOGLE_CLIENT_ID`            | Google OAuth Client Id                             |
+| `OAUTH_GOOGLE_CLIENT_SECRET`        | Google OAuth Client Secret                         |
+| `OAUTH_GOOGLE_REDIRECT_URI`         | Google OAuth Redirect URI                          |
+| `OAUTH_GITHUB_CLIENT_ID`            | GitHub OAuth Client Id                             |
+| `OAUTH_GITHUB_CLIENT_SECRET`        | GitHub OAuth Client Secret                         |
+| `OAUTH_GITHUB_REDIRECT_URI`         | GitHub OAuth Redirect URI                          |
+| `OAUTH_FACEBOOK_CLIENT_ID`          | Facebook OAuth Client Id                           |
+| `OAUTH_FACEBOOK_CLIENT_SECRET`      | Facebook OAuth Client Secret                       |
+| `OAUTH_FACEBOOK_REDIRECT_URI`       | Facebook OAuth Redirect URI                        |
 
 ## Todos
 
