@@ -1,3 +1,4 @@
+import { AppInputError } from '@app/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { UserEntity } from '../entities';
 import { SignInCommand } from '../commands';
@@ -23,8 +24,16 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
    * @param {SignInCommand} command
    * @returns
    */
-  async execute(command: SignInCommand): Promise<[UserEntity, string]> {
-    const [user, accessToken] = await this.userService.signIn(command.input);
+  async execute({ input }: SignInCommand): Promise<[UserEntity, string]> {
+    const user = await this.userService.findUserByEmailAddress(input.email);
+    if (!(await user.comparePassword(input.password))) {
+      throw new AppInputError('The provided password is not correct.');
+    }
+    if (user.isBlocked) {
+      throw new AppInputError('You have been blocked.');
+    }
+
+    const accessToken = this.userService.signAccessToken(user);
 
     this.eventBus.publish(new UserSignedInEvent(user));
 

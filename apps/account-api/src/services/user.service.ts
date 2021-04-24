@@ -8,7 +8,7 @@ import {
   EmailEntity,
   OAuthTicketEntity,
 } from '../entities';
-import { ISignInInput, ISignUpInput } from '../interfaces';
+import { ISignUpInput } from '../interfaces';
 import {
   EmailsRepository,
   OAuthTicketsRepository,
@@ -126,9 +126,9 @@ export class UserService {
   }
 
   /**
-   * Find a user using the provided email.
+   * Find a user using the provided email address.
    *
-   * @param {string} email
+   * @param {string} address
    * @throws {AppInputError} in case of non-existing user for
    *  the provided email.
    * @returns
@@ -142,10 +142,10 @@ export class UserService {
       .getOne();
 
     if (user) {
-      return user as any;
+      return user;
     }
 
-    throw new AppInputError(`No user found with email address: '${address}'`);
+    throw new AppInputError(`No user found with email address: '${address}'.`);
   }
 
   /**
@@ -200,23 +200,6 @@ export class UserService {
         .getOne()) || this.oauthTickets.create({ user });
 
     return this.oauthTickets.save(this.oauthTickets.merge(oauthTicket, props));
-  }
-
-  /**
-   * Sign In
-   *
-   * @param {ISignInInput} input
-   * @throws {AppInputError} in case of providing a wrong password.
-   * @returns
-   */
-  async signIn(input: ISignInInput): Promise<[UserEntity, string]> {
-    const user = await this.findUserByEmailAddress(input.email);
-
-    if (!(await user.comparePassword(input.password))) {
-      throw new AppInputError('The provided password is not correct.');
-    }
-
-    return [user, this.signAccessToken(user)];
   }
 
   /**
