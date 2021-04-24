@@ -12,6 +12,7 @@ import {
   GqlValidationPipe,
   GqlAppInputErrorFilter,
   IAppContext,
+  CookieService,
 } from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -42,9 +43,13 @@ import {
 import { EmailType, UserType } from '../types';
 import { AccountType } from '../types/account.type';
 import { GetUserQuery } from '../queries';
-import { AccountService, CookieService, UserService } from '../services';
+import { AccountService, UserService } from '../services';
 import { UserArgs } from '../args';
 import { UserEntity } from '../entities';
+import { RequestOAuthInput } from '../inputs/request-oauth.input';
+import { RequestOAuthCommand } from '../commands/request-oauth.command';
+import { AuthorizeOAuthInput } from '../inputs/authorize-oauth.input';
+import { AuthorizeOAuthCommand } from '../commands/authorize-oauth.command';
 
 /**
  * User Resolver
@@ -169,9 +174,49 @@ export class UserResolver {
   }
 
   /**
+   * Request for oauth sign-in (or sign-up).
+   *
+   * @param {RequestOAuthInput} input
+   * @returns
+   */
+  @Mutation(() => String)
+  async requestOAuth(@Args('input') input: RequestOAuthInput): Promise<string> {
+    return this.commandBus.execute(new RequestOAuthCommand(input));
+  }
+
+  /**
+   * Authorize oauth response.
+   *
+   * @param {AuthorizeOAuthInput} input
+   * @returns
+   */
+  @Mutation(() => String)
+  async authorizeOAuth(
+    @Context() { req }: IAppContext,
+    @Args('input') input: AuthorizeOAuthInput,
+  ): Promise<string> {
+    const [user, accessToken] = await this.commandBus.execute(
+      new AuthorizeOAuthCommand(input),
+    );
+
+    // Register refresh token
+    const refreshToken = await this.commandBus.execute(
+      new RegisterRefreshTokenCommand(
+        user,
+        req.clientIp,
+        req.headers['user-agent'],
+      ),
+    );
+
+    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+
+    return accessToken;
+  }
+
+  /**
    * Get the user by id.
    *
-   * @param {string} id
+   * @param {UserArgs} args
    * @returns
    */
   @Query(() => UserType, { name: 'user' })

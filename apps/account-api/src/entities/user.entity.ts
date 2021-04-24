@@ -25,10 +25,10 @@ export class UserEntity implements IUserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar' })
-  password: string;
+  @Column({ type: 'varchar', nullable: true })
+  password?: string;
 
-  private cachedPassword: string;
+  private cachedPassword?: string;
 
   @Column({ type: 'boolean', nullable: false, default: true })
   isActivated: boolean;
@@ -78,7 +78,11 @@ export class UserEntity implements IUserEntity {
    * @returns {Promise<boolean>}
    */
   async comparePassword(passwordToCompare: string): Promise<boolean> {
-    return bcrypt.compare(passwordToCompare, this.password);
+    if (this.password) {
+      return bcrypt.compare(passwordToCompare, this.password);
+    }
+
+    return false;
   }
 
   /**
@@ -86,7 +90,9 @@ export class UserEntity implements IUserEntity {
    */
   @AfterLoad()
   cachePassword() {
-    this.cachedPassword = this.password;
+    if (this.password) {
+      this.cachedPassword = this.password;
+    }
   }
 
   /**

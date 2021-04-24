@@ -14,5 +14,5 @@ export interface IUserType extends INodeType {
  * User Entity Interface
  */
 export interface IUserEntity extends INodeEntity, IUserType {
-  password: string;
+  password?: string;
 }

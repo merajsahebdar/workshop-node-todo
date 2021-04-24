@@ -2,9 +2,13 @@ import { CreateCasbinPoliciesCommand } from '@app/auth';
 import { Injectable } from '@nestjs/common';
 import { ICommand, IEvent, ofType, Saga } from '@nestjs/cqrs';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { SendEmailVerificationMessageCommand } from '../commands';
-import { RefreshTokenCreatedEvent, UserSignedUpEvent } from '../events';
+import {
+  OAuthTicketCreatedEvent,
+  RefreshTokenCreatedEvent,
+  UserSignedUpEvent,
+} from '../events';
 
 /**
  * User Saga
@@ -36,6 +40,30 @@ export class UserSaga {
   }
 
   /**
+   * Create casbin policies belongs to the newly created oauth ticket.
+   *
+   * @param {Observable<IEvent>} events$
+   * @returns
+   */
+  @Saga()
+  createOAuthTicketCasbinPolicies(
+    events$: Observable<IEvent>,
+  ): Observable<ICommand> {
+    return events$.pipe(
+      ofType(OAuthTicketCreatedEvent),
+      map((event) => {
+        return new CreateCasbinPoliciesCommand('p', [
+          [
+            `user:${event.user.id}`,
+            `oauth_tickets:${event.oauthTicket.id}`,
+            '*',
+          ],
+        ]);
+      }),
+    );
+  }
+
+  /**
    * Send the verification email when a new user registered successfully.
    *
    * @param {Observable<IEvent>} events$
@@ -47,6 +75,7 @@ export class UserSaga {
   ): Observable<ICommand> {
     return events$.pipe(
       ofType(UserSignedUpEvent),
+      filter((event) => !event.email.isVerified),
       map((event) => {
         return new SendEmailVerificationMessageCommand(
           event.user,

@@ -1,11 +1,30 @@
-import { Module } from '@nestjs/common';
-import { HashService, JwtService, SignedParamsService } from './services';
+import { Module, Provider } from '@nestjs/common';
+import {
+  CookieService,
+  HashService,
+  JwtService,
+  SignedParamsService,
+} from './services';
+
+// Services
+const services: Provider[] = [
+  JwtService,
+  HashService,
+  CookieService,
+  SignedParamsService,
+];
 
 /**
  * Common Module
  */
 @Module({
-  providers: [JwtService, HashService, SignedParamsService],
-  exports: [JwtService, HashService, SignedParamsService],
+  providers: [
+    // Services
+    ...services,
+  ],
+  exports: [
+    // Services
+    ...services,
+  ],
 })
 export class CommonModule {}

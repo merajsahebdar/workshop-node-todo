@@ -2,10 +2,16 @@ import { AppInputError, JwtService } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, FindConditions } from 'typeorm';
-import { UserEntity, RefreshTokenEntity, EmailEntity } from '../entities';
+import {
+  UserEntity,
+  RefreshTokenEntity,
+  EmailEntity,
+  OAuthTicketEntity,
+} from '../entities';
 import { ISignInInput, ISignUpInput } from '../interfaces';
 import {
   EmailsRepository,
+  OAuthTicketsRepository,
   RefreshTokensRepository,
   UsersRepository,
 } from '../repositories';
@@ -25,6 +31,8 @@ export class UserService {
     @InjectRepository(RefreshTokenEntity)
     private refreshTokens: RefreshTokensRepository,
     @InjectRepository(EmailEntity) private emails: EmailsRepository,
+    @InjectRepository(OAuthTicketEntity)
+    private oauthTickets: OAuthTicketsRepository,
     private jwtService: JwtService,
   ) {}
 
@@ -138,6 +146,60 @@ export class UserService {
     }
 
     throw new AppInputError(`No user found with email address: '${address}'`);
+  }
+
+  /**
+   * Create User
+   *
+   * @param {DeepPartial<UserEntity>} props
+   * @returns
+   */
+  async createUser(props: DeepPartial<UserEntity>): Promise<UserEntity> {
+    return this.users.save(this.users.create(props));
+  }
+
+  /**
+   * Create Email
+   *
+   * @param {DeepPartial<EmailEntity>} props
+   * @returns
+   */
+  async createEmail(props: DeepPartial<EmailEntity>): Promise<EmailEntity> {
+    return this.emails.save(this.emails.create(props));
+  }
+
+  /**
+   * Create OAuth Ticket
+   *
+   * @param {DeepPartial<OAuthTicketEntity>} props
+   * @returns
+   */
+  async createOAuthTicket(
+    props: DeepPartial<OAuthTicketEntity>,
+  ): Promise<OAuthTicketEntity> {
+    return this.oauthTickets.save(this.oauthTickets.create(props));
+  }
+
+  /**
+   * Update OAuth Ticket by User
+   *
+   * @param {UserEntity} user
+   * @param {DeepPartial<OAuthTicketEntity>} props
+   * @returns
+   */
+  async updateOAuthTicketByUser(
+    user: UserEntity,
+    props: Omit<DeepPartial<OAuthTicketEntity>, 'user'>,
+  ): Promise<OAuthTicketEntity> {
+    const oauthTicket =
+      (await this.oauthTickets
+        .createQueryBuilder('OAuthTicket')
+        .leftJoin(UserEntity, 'User', 'OAuthTicket.user = User.id')
+        .where('OAuthTicket.provider = :provider', { provider: props.provider })
+        .andWhere('User.id = :userId', { userId: user.id })
+        .getOne()) || this.oauthTickets.create({ user });
+
+    return this.oauthTickets.save(this.oauthTickets.merge(oauthTicket, props));
   }
 
   /**

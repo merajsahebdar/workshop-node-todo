@@ -1,4 +1,9 @@
-import { AuthModule, CasbinManagementModule } from '@app/auth';
+import {
+  AuthModule,
+  CasbinManagementModule,
+  oauthConfig,
+  OAuthModule,
+} from '@app/auth';
 import {
   IsUniqueConstraint,
   CommonModule,
@@ -7,6 +12,7 @@ import {
   typeormConfig,
   commonConfig,
   createApolloLogger,
+  TypeOrmConnectionModule,
 } from '@app/common';
 import { MailingClientModule } from '@app/mailing-lib';
 import { Module } from '@nestjs/common';
@@ -14,11 +20,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GraphQLFederationModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { appConfig } from './configs';
 import {
   AccountEntity,
   EmailEntity,
+  OAuthTicketEntity,
   RefreshTokenEntity,
   UserEntity,
 } from './entities';
@@ -34,7 +40,9 @@ import {
   SendEmailVerificationMessageCommandHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
-import { AccountService, CookieService, UserService } from './services';
+import { AccountService, UserService } from './services';
+import { RequestOAuthCommandHandler } from './handlers/request-oauth.command.handler';
+import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command.handler';
 
 /**
  * Account API Module
@@ -44,27 +52,21 @@ import { AccountService, CookieService, UserService } from './services';
     // Third-party Modules
     // Configuration
     ConfigModule.forRoot({
-      load: [appConfig, commonConfig, redisConfig, typeormConfig, jwtConfig],
+      load: [
+        appConfig,
+        commonConfig,
+        oauthConfig,
+        redisConfig,
+        typeormConfig,
+        jwtConfig,
+      ],
       isGlobal: true,
     }),
     // Database
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('typeorm.host'),
-        port: configService.get('typeorm.port'),
-        username: configService.get('typeorm.username'),
-        password: configService.get('typeorm.password'),
-        database: configService.get('typeorm.database'),
-        namingStrategy: new SnakeNamingStrategy(),
-        autoLoadEntities: true,
-        synchronize: true,
-      }),
-    }),
     TypeOrmModule.forFeature([
       UserEntity,
       EmailEntity,
+      OAuthTicketEntity,
       RefreshTokenEntity,
       AccountEntity,
     ]),
@@ -90,19 +92,22 @@ import { AccountService, CookieService, UserService } from './services';
     // App Modules
     CommonModule,
     AuthModule,
+    TypeOrmConnectionModule,
     CasbinManagementModule,
+    OAuthModule,
     MailingClientModule,
   ],
   providers: [
     // Services
     UserService,
     AccountService,
-    CookieService,
     // Handlers
     GetUserQueryHandler,
     CheckEmailAvailabilityCommandHandler,
     SignInCommandHandler,
     SignUpCommandHandler,
+    RequestOAuthCommandHandler,
+    AuthorizeOAuthCommandHandler,
     SignAccessTokenCommandHandler,
     SendEmailVerificationMessageCommandHandler,
     RegisterRefreshTokenCommandHandler,

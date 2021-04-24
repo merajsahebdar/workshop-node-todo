@@ -25,11 +25,14 @@ export class AccountEntity implements IAccountEntity {
   @JoinColumn()
   user: UserEntity;
 
-  @Column({ type: 'varchar' })
-  forename: string;
+  @Column({ type: 'varchar', nullable: true })
+  forename?: string;
 
-  @Column({ type: 'varchar' })
-  surname: string;
+  @Column({ type: 'varchar', nullable: true })
+  surname?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  nickname?: string;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: string;

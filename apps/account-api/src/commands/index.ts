@@ -1,5 +1,7 @@
+export * from './authorize-oauth.command';
 export * from './check-email-availability.command';
 export * from './register-refresh-token.command';
+export * from './request-oauth.command';
 export * from './send-email-verification-message.command';
 export * from './sign-access-token.command';
 export * from './sign-in.command';

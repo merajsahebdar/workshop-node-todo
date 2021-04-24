@@ -5,8 +5,9 @@ import { IUserEntity } from './user.interface';
  * Account Type Interface
  */
 export interface IAccountType extends INodeType {
-  forename: string;
-  surname: string;
+  forename?: string;
+  surname?: string;
+  nickname?: string;
 }
 
 /**

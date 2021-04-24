@@ -16,11 +16,14 @@ export class AccountType implements IAccountType {
   @Field(() => ID)
   id: string;
 
-  @Field()
-  forename: string;
+  @Field({ nullable: true })
+  forename?: string;
 
-  @Field()
-  surname: string;
+  @Field({ nullable: true })
+  surname?: string;
+
+  @Field({ nullable: true })
+  nickname?: string;
 
   @Field(() => GraphQLISODateTime)
   createdAt: string;

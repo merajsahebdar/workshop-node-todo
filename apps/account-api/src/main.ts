@@ -1,4 +1,4 @@
-import { ApolloErrorFilter } from '@app/common';
+import { ApolloErrorFilter, HttpClientErrorFilter } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
@@ -16,7 +16,7 @@ import { AccountApiModule } from './account-api.module';
   const configService = app.get(ConfigService);
 
   // Global Filters
-  app.useGlobalFilters(new ApolloErrorFilter());
+  app.useGlobalFilters(new ApolloErrorFilter(), new HttpClientErrorFilter());
 
   // Request Extending Tools
   app.use(cookieParser());
