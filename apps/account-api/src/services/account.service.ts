@@ -39,14 +39,14 @@ export class AccountService {
    * @returns
    */
   async findByUserId(userId: string): Promise<AccountEntity> {
-    const user = await this.accounts
+    const account = await this.accounts
       .createQueryBuilder('Account')
       .leftJoin(UserEntity, 'User', 'User.id = Account.user')
       .where('User.id = :userId', { userId })
       .getOne();
 
-    if (user) {
-      return user;
+    if (account) {
+      return account;
     }
 
     throw new AppInputError(

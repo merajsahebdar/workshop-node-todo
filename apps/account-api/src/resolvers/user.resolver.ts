@@ -40,16 +40,16 @@ import {
   SignUpInput,
   VerifyEmailInput,
 } from '../inputs';
-import { EmailType, UserType } from '../types';
-import { AccountType } from '../types/account.type';
-import { GetUserQuery } from '../queries';
-import { AccountService, EmailService } from '../services';
+import { EmailType, UserType, AccountType } from '../types';
+import {
+  GetUserAccountQuery,
+  GetUserEmailsQuery,
+  GetUserQuery,
+} from '../queries';
 import { UserArgs } from '../args';
 import { UserEntity } from '../entities';
-import { RequestOAuthInput } from '../inputs/request-oauth.input';
-import { RequestOAuthCommand } from '../commands/request-oauth.command';
-import { AuthorizeOAuthInput } from '../inputs/authorize-oauth.input';
-import { AuthorizeOAuthCommand } from '../commands/authorize-oauth.command';
+import { AuthorizeOAuthInput, RequestOAuthInput } from '../inputs';
+import { AuthorizeOAuthCommand, RequestOAuthCommand } from '../commands';
 
 /**
  * User Resolver
@@ -65,14 +65,11 @@ export class UserResolver {
    * @param {CommandBus} commandBus
    * @param {CookieService} cookieService
    * @param {EmailService} emailService
-   * @param {AccountService} accountService
    */
   constructor(
     private queryBus: QueryBus,
     private commandBus: CommandBus,
     private cookieService: CookieService,
-    private emailService: EmailService,
-    private accountService: AccountService,
   ) {}
 
   /**
@@ -233,8 +230,8 @@ export class UserResolver {
    * @returns
    */
   @ResolveField(() => AccountType, { name: 'account' })
-  async getAccount(@Parent() { id }: UserType): Promise<AccountType> {
-    return this.accountService.findByUserId(id);
+  async getAccount(@Parent() { id: userId }: UserType): Promise<AccountType> {
+    return this.queryBus.execute(new GetUserAccountQuery(userId));
   }
 
   /**
@@ -244,7 +241,7 @@ export class UserResolver {
    * @returns
    */
   @ResolveField(() => [EmailType], { name: 'emails' })
-  async getEmails(@Parent() { id }: UserType): Promise<EmailType[]> {
-    return this.emailService.findManyByUserId(id);
+  async getEmails(@Parent() { id: userId }: UserType): Promise<EmailType[]> {
+    return this.queryBus.execute(new GetUserEmailsQuery(userId));
   }
 }

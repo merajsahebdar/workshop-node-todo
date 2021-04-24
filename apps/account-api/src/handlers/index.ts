@@ -1,4 +1,6 @@
 export * from './check-email-availability.command.handler';
+export * from './get-user-account.query.handler';
+export * from './get-user-emails.query.handler';
 export * from './get-user.query.handler';
 export * from './register-refresh-token.command.handler';
 export * from './send-email-verification-message.command.handler';

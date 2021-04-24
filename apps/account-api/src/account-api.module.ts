@@ -38,6 +38,8 @@ import {
   SignUpCommandHandler,
   RegisterRefreshTokenCommandHandler,
   SendEmailVerificationMessageCommandHandler,
+  GetUserAccountQueryHandler,
+  GetUserEmailsQueryHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
 import {
@@ -112,6 +114,8 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     AuthService,
     // Handlers
     GetUserQueryHandler,
+    GetUserAccountQueryHandler,
+    GetUserEmailsQueryHandler,
     CheckEmailAvailabilityCommandHandler,
     SignInCommandHandler,
     SignUpCommandHandler,
