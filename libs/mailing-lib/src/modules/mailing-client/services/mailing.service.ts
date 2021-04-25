@@ -1,16 +1,14 @@
 import { ISendMailOptions } from '@nestjs-modules/mailer';
-import { Inject, Logger, OnApplicationBootstrap } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ClientProxy } from '@nestjs/microservices';
+import { InjectQueue } from '@nestjs/bull';
+import { Logger } from '@nestjs/common';
+import { Queue } from 'bull';
 import { renderFile } from 'pug';
-import { timeout } from 'rxjs/operators';
-import { MESSAGE_PATTERN_SEND_MAIL } from '../../../constants';
-import { MAILING_CLIENT } from '../constants';
+import { MAILING_QUEUE } from '../../../constants';
 
 /**
  * Mailing Service
  */
-export class MailingService implements OnApplicationBootstrap {
+export class MailingService {
   /**
    * Logger
    */
@@ -21,10 +19,7 @@ export class MailingService implements OnApplicationBootstrap {
    *
    * @param {ClientProxy} client
    */
-  constructor(
-    @Inject(MAILING_CLIENT) private client: ClientProxy,
-    private configService: ConfigService,
-  ) {
+  constructor(@InjectQueue(MAILING_QUEUE) private mailingQueue: Queue) {
     this.logger = new Logger(MailingService.name);
   }
 
@@ -44,16 +39,13 @@ export class MailingService implements OnApplicationBootstrap {
         options.html = renderFile(template, context ?? {});
       }
 
-      await this.client
-        .send(MESSAGE_PATTERN_SEND_MAIL, options)
-        .pipe(timeout(this.configService.get('mailer.timeout', 5000)))
-        .toPromise();
+      await this.mailingQueue.add(options, {
+        attempts: 3,
+        removeOnFail: true,
+        removeOnComplete: true,
+      });
     } catch (error) {
       this.logger.error(error.message);
     }
-  }
-
-  async onApplicationBootstrap() {
-    await this.client.connect();
   }
 }

@@ -79,7 +79,6 @@
     "graphql-tools": "^7.0.4",
     "jsonwebtoken": "^8.5.1",
     "lodash.memoize": "^4.1.2",
-    "nats": "^1.4.0",
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.5.0",
     "pg": "^8.5.1",

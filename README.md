@@ -20,7 +20,6 @@ _A Backend Boilerplate built on top of NestJS._
 | `Node.JS`    | `^14.0.0`  |
 | `PostgreSQL` | `>=13.0.0` |
 | `Redis`      | `^5.0.0`   |
-| `NATS`       | `^2.0.0`   |
 
 ## Environment Variables
 
@@ -41,7 +40,6 @@ _A Backend Boilerplate built on top of NestJS._
 | `JWT_PRiVATE_KEY_PASSPHRASE`        | The passphrase belongs to the jwt private key      |
 | `REDIS_HOST`                        | The host address of Redis server                   |
 | `REDIS_PORT`                        | The port number of Redis server                    |
-| `NATS_URL`                          | The URL to the NATS server                         |
 | `MAILER_TRANSPORT`                  | The mailing connection transport                   |
 | `MAILER_DEFAULT_SENDER`             | The default email address to send mails from it    |
 | `OAUTH_GOOGLE_CLIENT_ID`            | Google OAuth Client Id                             |

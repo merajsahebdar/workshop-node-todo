@@ -1,19 +1,27 @@
 import { Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bull';
-import { MAILING_QUEUE } from './constants';
-import { MailingController } from './controllers';
 import { MailingQueueProcessor } from './queue-processors';
+import { ConfigService } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MAILING_QUEUE_MODULES } from './constants';
 
 /**
  * Mailing Lib Module
  */
 @Module({
   imports: [
+    ...MAILING_QUEUE_MODULES,
     // Third-party Modules
-    // Queue
-    BullModule.registerQueue({ name: MAILING_QUEUE }),
+    // Mailer
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: configService.get('mailer.transport'),
+        defaults: {
+          from: configService.get('mailer.defaults.from'),
+        },
+      }),
+    }),
   ],
-  controllers: [MailingController],
   providers: [MailingQueueProcessor],
 })
 export class MailingLibModule {}
