@@ -5,7 +5,6 @@ import {
   OAuthModule,
 } from '@app/auth';
 import {
-  IsUniqueConstraint,
   CommonModule,
   jwtConfig,
   redisConfig,
@@ -131,7 +130,6 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     UserSaga,
     // Resolvers
     UserResolver,
-    IsUniqueConstraint,
   ],
 })
 export class AccountApiModule {}

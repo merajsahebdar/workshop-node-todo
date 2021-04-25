@@ -5,6 +5,7 @@ import {
   JwtService,
   SignedParamsService,
 } from './services';
+import { IsUniqueConstraint } from './validators';
 
 // Services
 const services: Provider[] = [
@@ -12,6 +13,7 @@ const services: Provider[] = [
   HashService,
   CookieService,
   SignedParamsService,
+  IsUniqueConstraint,
 ];
 
 /**

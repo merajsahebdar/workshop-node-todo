@@ -1,5 +1,6 @@
 import { IsUnique, MatchWith } from '@app/common';
 import { Field, InputType } from '@nestjs/graphql';
+import { Type } from 'class-transformer';
 import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { EmailEntity } from '../entities';
 import {
@@ -51,10 +52,12 @@ export class SignUpInput implements ISignUpInput {
   readonly passwordConfirm: string;
 
   @Field(() => SignUpEmailInput)
-  @ValidateNested()
+  @ValidateNested({ each: true })
+  @Type(() => SignUpEmailInput)
   email: SignUpEmailInput;
 
   @Field(() => SignUpAccountInput)
-  @ValidateNested()
+  @ValidateNested({ each: true })
+  @Type(() => SignUpAccountInput)
   account: SignUpAccountInput;
 }
