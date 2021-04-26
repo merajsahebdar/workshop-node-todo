@@ -2,8 +2,10 @@
   "collection": "@nestjs/schematics",
   "compilerOptions": {
     "assets": [
-      "**/*.pug",
-      "**/*.proto"
+      {
+        "include": "../../../{apps,libs}/**/*.{pug,proto}",
+        "outDir": "dist/assets"
+      }
     ],
     "watchAssets": true,
     "webpack": true

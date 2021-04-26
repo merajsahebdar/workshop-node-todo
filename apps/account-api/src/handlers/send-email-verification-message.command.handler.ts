@@ -1,8 +1,7 @@
-import { SignedParamsService } from '@app/common';
+import { asset, SignedParamsService } from '@app/common';
 import { MailingService } from '@app/mailing-lib';
 import { ConfigService } from '@nestjs/config';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { join } from 'path';
 import { stringify } from 'qs';
 import { SendEmailVerificationMessageCommand } from '../commands';
 
@@ -53,7 +52,7 @@ export class SendEmailVerificationMessageCommandHandler
 
     await this.mailingService.sendMail({
       to: address,
-      template: join(__dirname, 'templates', 'verification.pug'),
+      template: asset('templates', 'account', 'email-verification.pug'),
       context: {
         account,
         verificationURL: verificationURL.toString(),

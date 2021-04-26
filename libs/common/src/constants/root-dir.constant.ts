@@ -3,4 +3,4 @@ import { resolve } from 'path';
 /**
  * Path to the root directory of the project.
  */
-export const rootDir = resolve(__dirname, '..', '..', '..');
+export const ROOT_DIR = resolve(__dirname, '..', '..', '..');

@@ -1,3 +1,4 @@
+export * from './asset.util';
 export * from './async-array.util';
 export * from './create-apollo-logger.util';
 export * from './extend-metadata.util';

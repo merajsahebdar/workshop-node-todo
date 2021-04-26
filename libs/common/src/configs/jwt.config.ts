@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { rootDir } from '../constants';
+import { ROOT_DIR } from '../constants';
 
 /**
  * JWT Config
@@ -7,8 +7,8 @@ import { rootDir } from '../constants';
 export function jwtConfig() {
   return {
     jwt: {
-      publicKeyPath: join(rootDir, process.env.JWT_PUBLIC_KEY as string),
-      privateKeyPath: join(rootDir, process.env.JWT_PRIVATE_KEY as string),
+      publicKeyPath: join(ROOT_DIR, process.env.JWT_PUBLIC_KEY as string),
+      privateKeyPath: join(ROOT_DIR, process.env.JWT_PRIVATE_KEY as string),
       privateKeyPassphrase: process.env.JWT_PRIVATE_KEY_PASSPHRASE as string,
     },
   };

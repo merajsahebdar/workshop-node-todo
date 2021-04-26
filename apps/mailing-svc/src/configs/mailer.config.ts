@@ -1,6 +1,3 @@
-import { rootDir } from '@app/common';
-import { resolve } from 'path';
-
 /**
  * Mailer Config
  */
@@ -11,7 +8,6 @@ export function mailerConfig() {
       defaults: {
         from: process.env.MAILER_DEFAULT_SENDER,
       },
-      templateDir: resolve(rootDir, 'src', 'app', 'templates'),
     },
   };
 }
