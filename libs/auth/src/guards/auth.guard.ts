@@ -1,4 +1,4 @@
-import { getRequest, IAppRequest } from '@app/common';
+import { getRequest, IHttpRequest } from '@app/common';
 import { ExecutionContext, Inject, Type, mixin } from '@nestjs/common';
 import memoize from 'lodash.memoize';
 import { IAuthStrategy, IAuthGuard } from '../interfaces';
@@ -43,7 +43,7 @@ function createAuthGuard(StrategyClass: {
      * @param {ExecutionContext} context
      * @returns
      */
-    getRequest(context: ExecutionContext): IAppRequest {
+    getRequest(context: ExecutionContext): IHttpRequest {
       return getRequest(context);
     }
   }

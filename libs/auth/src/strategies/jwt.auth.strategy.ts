@@ -1,4 +1,4 @@
-import { IAppRequest, JwtService, getRequest } from '@app/common';
+import { IHttpRequest, JwtService, getRequest } from '@app/common';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection, ObjectLiteral, Repository } from 'typeorm';
@@ -60,11 +60,11 @@ export class JwtAuthStrategy implements IAuthStrategy {
   /**
    * Get authorization token from request headers.
    *
-   * @param {IAppRequest} request
+   * @param {IHttpRequest} request
    * @throws {AppInputError} in case of missing a valid authorization header.
    * @returns
    */
-  private getToken(request: IAppRequest): string | null {
+  private getToken(request: IHttpRequest): string | null {
     const authorization = request.headers['authorization'];
 
     if (authorization) {

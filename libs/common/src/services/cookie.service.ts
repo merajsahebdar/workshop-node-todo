@@ -1,4 +1,4 @@
-import { IAppContext } from '@app/common';
+import { IGqlContext } from '@app/common';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 
@@ -11,9 +11,9 @@ export class CookieService {
    * Instead we need to inject `REQUEST`.
    * SEE: https://docs.nestjs.com/fundamentals/injection-scopes
    *
-   * @param {IAppContext} context
+   * @param {IGqlContext} context
    */
-  constructor(@Inject(CONTEXT) private context: IAppContext) {}
+  constructor(@Inject(CONTEXT) private context: IGqlContext) {}
 
   /**
    * Set a cookie.

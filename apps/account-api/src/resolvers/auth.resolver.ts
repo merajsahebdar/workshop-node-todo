@@ -8,7 +8,7 @@ import {
   CookieService,
   GqlAppInputErrorFilter,
   GqlValidationPipe,
-  IAppContext,
+  IGqlContext,
 } from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -68,7 +68,7 @@ export class AuthResolver {
    */
   @Mutation(() => String)
   async signIn(
-    @Context() { req }: IAppContext,
+    @Context() { req }: IGqlContext,
     @Args('input') input: SignInInput,
   ): Promise<string> {
     // Login
@@ -98,7 +98,7 @@ export class AuthResolver {
    */
   @Mutation(() => String)
   async signUp(
-    @Context() { req }: IAppContext,
+    @Context() { req }: IGqlContext,
     @Args('input') input: SignUpInput,
   ): Promise<string> {
     // Register
@@ -139,7 +139,7 @@ export class AuthResolver {
    */
   @Mutation(() => String)
   async authorizeOAuth(
-    @Context() { req }: IAppContext,
+    @Context() { req }: IGqlContext,
     @Args('input') input: AuthorizeOAuthInput,
   ): Promise<string> {
     const [user, accessToken] = await this.commandBus.execute(
