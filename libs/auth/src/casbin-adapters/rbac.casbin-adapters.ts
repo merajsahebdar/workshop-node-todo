@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { BatchAdapter, FilteredAdapter, Helper, Model } from 'casbin';
-import { Connection, FindConditions } from 'typeorm';
+import { EntityManager, FindConditions } from 'typeorm';
 import { CasbinRbacPolicyEntity } from '../entities';
 import { CasbinRbacPoliciesRepository } from '../repositories';
 
@@ -18,11 +18,12 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Constructor
    *
-   * @param {Connection} connection
-   * @param {CasbinRepository} casbinRules
+   * @param connection
+   * @param policies
    */
   constructor(
-    @InjectConnection() private connection: Connection,
+    @InjectEntityManager()
+    private entityManager: EntityManager,
     @InjectRepository(CasbinRbacPolicyEntity)
     private policies: CasbinRbacPoliciesRepository,
   ) {}
@@ -39,8 +40,8 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Load Policy Line
    *
-   * @param {CasbinRbacPolicyEntity} policy
-   * @param {Model} model
+   * @param policy
+   * @param model
    * @returns
    */
   private loadPolicyLine(line: CasbinRbacPolicyEntity, model: Model) {
@@ -57,7 +58,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Load Policy
    *
-   * @param {Model} model
+   * @param model
    * @returns
    */
   async loadPolicy(model: Model): Promise<void> {
@@ -71,8 +72,8 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Load Filtered Policy
    *
-   * @param {Model} model
-   * @param {FindConditions<CasbinRbacPolicyEntity>} filter
+   * @param model
+   * @param filter
    * @returns
    */
   async loadFilteredPolicy(
@@ -94,8 +95,8 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Create an instance of casbin policy entity.
    *
-   * @param {string} ptype
-   * @param {string[]} policy
+   * @param ptype
+   * @param policy
    * @returns
    */
   private createPolicyLine(
@@ -136,7 +137,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Save Policy
    *
-   * @param {Model} model
+   * @param model
    * @returns
    */
   async savePolicy(model: Model): Promise<boolean> {
@@ -164,20 +165,9 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
       }
     }
 
-    const queryRunner = this.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await queryRunner.manager.save(lines);
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    await this.entityManager.transaction(async (entityManager) => {
+      await entityManager.save(lines);
+    });
 
     return true;
   }
@@ -185,9 +175,9 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Add Policy
    *
-   * @param {string} sec
-   * @param {string} ptype
-   * @param {string[]} policy
+   * @param sec
+   * @param ptype
+   * @param policy
    * @returns
    */
   async addPolicy(_: string, ptype: string, policy: string[]): Promise<void> {
@@ -198,9 +188,9 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Add Policies
    *
-   * @param {string} sec
-   * @param {string} ptype
-   * @param {string[][]} policies
+   * @param sec
+   * @param ptype
+   * @param policies
    * @returns
    */
   async addPolicies(
@@ -214,28 +204,17 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
       lines.push(line);
     }
 
-    const queryRunner = this.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await queryRunner.manager.save(lines);
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    await this.entityManager.transaction(async (entityManager) => {
+      await entityManager.save(lines);
+    });
   }
 
   /**
    * Remove Policy
    *
-   * @param {string} sec
-   * @param {string} ptype
-   * @param {string[]} policy
+   * @param sec
+   * @param ptype
+   * @param policy
    * @returns
    */
   async removePolicy(
@@ -249,37 +228,36 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
 
   /**
    * Remove Policies
+   *
+   * @param sec
+   * @param ptype
+   * @param policies
+   * @returns
    */
-  public async removePolicies(_: string, ptype: string, policies: string[][]) {
-    const queryRunner = this.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
+  public async removePolicies(
+    _: string,
+    ptype: string,
+    policies: string[][],
+  ): Promise<void> {
+    await this.entityManager.transaction(async (entityManager) => {
       for (const policy of policies) {
         const line = this.createPolicyLine(ptype, policy);
-        await queryRunner.manager.delete(CasbinRbacPolicyEntity, line);
+        await entityManager.delete(CasbinRbacPolicyEntity, line);
       }
-      await queryRunner.commitTransaction();
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    });
   }
 
   /**
    * Remove Filtered Policy
    *
-   * @param {string} sec
-   * @param {string} ptype
-   * @param {number} fieldIndex
-   * @param {string[]} fieldValues
+   * @param sec
+   * @param ptype
+   * @param fieldIndex
+   * @param fieldValues
+   * @returns
    */
   async removeFilteredPolicy(
-    sec: string,
+    _: string,
     ptype: string,
     fieldIndex: number,
     ...fieldValues: string[]
