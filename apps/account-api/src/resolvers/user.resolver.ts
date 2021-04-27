@@ -4,42 +4,11 @@ import {
   JwtAuthStrategy,
   UsePermissions,
   RbacStrategy,
-  REFRESH_TOKEN_COOKIE_KEY,
-  RefreshTokenAuthStrategy,
-  AuthorizedUser,
 } from '@app/auth';
-import {
-  GqlValidationPipe,
-  GqlAppInputErrorFilter,
-  IAppContext,
-  CookieService,
-} from '@app/common';
+import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import {
-  Args,
-  Context,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
-import { GraphQLBoolean } from 'graphql';
-import {
-  VerifyEmailCommand,
-  CheckEmailAvailabilityCommand,
-  RegisterRefreshTokenCommand,
-  SignUpCommand,
-  SignInCommand,
-  SignAccessTokenCommand,
-} from '../commands';
-import {
-  CheckEmailAvailabilityInput,
-  SignInInput,
-  SignUpInput,
-  VerifyEmailInput,
-} from '../inputs';
+import { QueryBus } from '@nestjs/cqrs';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { EmailType, UserType, AccountType } from '../types';
 import {
   GetUserAccountQuery,
@@ -47,9 +16,6 @@ import {
   GetUserQuery,
 } from '../queries';
 import { UserArgs } from '../args';
-import { UserEntity } from '../entities';
-import { AuthorizeOAuthInput, RequestOAuthInput } from '../inputs';
-import { AuthorizeOAuthCommand, RequestOAuthCommand } from '../commands';
 
 /**
  * User Resolver
@@ -64,151 +30,8 @@ export class UserResolver {
    * @param {QueryBus} queryBus
    * @param {CommandBus} commandBus
    * @param {CookieService} cookieService
-   * @param {EmailService} emailService
    */
-  constructor(
-    private queryBus: QueryBus,
-    private commandBus: CommandBus,
-    private cookieService: CookieService,
-  ) {}
-
-  /**
-   * Return a new signed access token from given refresh token.
-   *
-   * @param {UserEntity} user
-   * @returns
-   */
-  @UseGuards(AuthGuard(RefreshTokenAuthStrategy))
-  @Mutation(() => String)
-  async refreshToken(@AuthorizedUser() user: UserEntity): Promise<string> {
-    return this.commandBus.execute(new SignAccessTokenCommand(user));
-  }
-
-  /**
-   * Sign In
-   *
-   * @param {SignInInput} input
-   * @returns
-   */
-  @Mutation(() => String)
-  async signIn(
-    @Context() { req }: IAppContext,
-    @Args('input') input: SignInInput,
-  ): Promise<string> {
-    // Login
-    const [user, accessToken] = await this.commandBus.execute(
-      new SignInCommand(input),
-    );
-
-    // Register refresh token
-    const refreshToken = await this.commandBus.execute(
-      new RegisterRefreshTokenCommand(
-        user,
-        req.clientIp,
-        req.headers['user-agent'],
-      ),
-    );
-
-    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
-
-    return accessToken;
-  }
-
-  /**
-   * Sign Up
-   *
-   * @param {SignUpInput} input
-   * @returns
-   */
-  @Mutation(() => String)
-  async signUp(
-    @Context() { req }: IAppContext,
-    @Args('input') input: SignUpInput,
-  ): Promise<string> {
-    // Register
-    const [user, accessToken] = await this.commandBus.execute(
-      new SignUpCommand(input),
-    );
-
-    // Register refresh token
-    const refreshToken = await this.commandBus.execute(
-      new RegisterRefreshTokenCommand(
-        user,
-        req.clientIp,
-        req.headers['user-agent'],
-      ),
-    );
-
-    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
-
-    return accessToken;
-  }
-
-  /**
-   * Check whether the provided email address is available for registeration
-   *  or not.
-   *
-   * @param {CheckUserEmailAvailabilityInput} input
-   * @returns
-   */
-  @Mutation(() => GraphQLBoolean)
-  async isUserEmailAvailable(
-    @Args('input') input: CheckEmailAvailabilityInput,
-  ): Promise<boolean> {
-    return this.commandBus.execute(new CheckEmailAvailabilityCommand(input));
-  }
-
-  /**
-   * Verify User
-   *
-   * @param {VerifyEmailInput} input
-   * @returns
-   */
-  @Mutation(() => GraphQLBoolean)
-  @UseGuards(AuthGuard(JwtAuthStrategy))
-  async verifyEmail(@Args('input') input: VerifyEmailInput): Promise<boolean> {
-    return this.commandBus.execute(new VerifyEmailCommand(input));
-  }
-
-  /**
-   * Request for oauth sign-in (or sign-up).
-   *
-   * @param {RequestOAuthInput} input
-   * @returns
-   */
-  @Mutation(() => String)
-  async requestOAuth(@Args('input') input: RequestOAuthInput): Promise<string> {
-    return this.commandBus.execute(new RequestOAuthCommand(input));
-  }
-
-  /**
-   * Authorize oauth response.
-   *
-   * @param {AuthorizeOAuthInput} input
-   * @returns
-   */
-  @Mutation(() => String)
-  async authorizeOAuth(
-    @Context() { req }: IAppContext,
-    @Args('input') input: AuthorizeOAuthInput,
-  ): Promise<string> {
-    const [user, accessToken] = await this.commandBus.execute(
-      new AuthorizeOAuthCommand(input),
-    );
-
-    // Register refresh token
-    const refreshToken = await this.commandBus.execute(
-      new RegisterRefreshTokenCommand(
-        user,
-        req.clientIp,
-        req.headers['user-agent'],
-      ),
-    );
-
-    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
-
-    return accessToken;
-  }
+  constructor(private queryBus: QueryBus) {}
 
   /**
    * Get the user by id.

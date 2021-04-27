@@ -27,7 +27,7 @@ import {
   RefreshTokenEntity,
   UserEntity,
 } from './entities';
-import { UserResolver } from './resolvers';
+import { AuthResolver, EmailResolver, UserResolver } from './resolvers';
 import {
   VerifyEmailCommandHandler,
   GetUserQueryHandler,
@@ -130,6 +130,8 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     UserSaga,
     // Resolvers
     UserResolver,
+    EmailResolver,
+    AuthResolver,
   ],
 })
 export class AccountApiModule {}
