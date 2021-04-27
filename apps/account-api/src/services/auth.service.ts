@@ -1,15 +1,18 @@
 import { JwtService } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
-import { DeepPartial } from 'typeorm';
+import { InjectRepository, InjectEntityManager } from '@nestjs/typeorm';
+import { DeepPartial, EntityManager } from 'typeorm';
 import {
   AccountEntity,
   EmailEntity,
   RefreshTokenEntity,
   UserEntity,
 } from '../entities';
-import { AccountService } from './account.service';
-import { EmailService } from './email.service';
-import { UserService } from './user.service';
+import {
+  AccountsRepository,
+  EmailsRepository,
+  UsersRepository,
+} from '../repositories';
 
 // SignUp Service Response
 export type SignUpServiceResponse = {
@@ -24,22 +27,22 @@ export type SignUpServiceResponse = {
 @Injectable()
 export class AuthService {
   /**
-   * Account Service
+   * Accounts Repository
    */
-  @Inject(AccountService)
-  private accountService: AccountService;
+  @InjectRepository(AccountEntity)
+  private accounts: AccountsRepository;
 
   /**
-   * User Service
+   * Users Repository
    */
-  @Inject(UserService)
-  private userService: UserService;
+  @InjectRepository(UserEntity)
+  private users: UsersRepository;
 
   /**
-   * Email Service
+   * Emails Repository
    */
-  @Inject(EmailService)
-  private emailService: EmailService;
+  @InjectRepository(EmailEntity)
+  private emails: EmailsRepository;
 
   /**
    * Jwt Service
@@ -48,9 +51,21 @@ export class AuthService {
   private jwtService: JwtService;
 
   /**
+   * Constructor
+   *
+   * @param entityManager
+   */
+  constructor(
+    @InjectEntityManager()
+    private entityManager: EntityManager,
+  ) {}
+
+  /**
    * Sign Up
    *
-   * @param {ISignUpInput} input
+   * @param userEntityLike
+   * @param emailEntityLike
+   * @param accountEntityLike
    * @returns
    */
   async signUp(
@@ -58,31 +73,39 @@ export class AuthService {
     emailEntityLike: DeepPartial<EmailEntity>,
     accountEntityLike: DeepPartial<AccountEntity>,
   ): Promise<SignUpServiceResponse> {
-    const user = await this.userService.createUser({
-      isActivated: true,
-      isBlocked: false,
-      ...userEntityLike,
-    });
+    return this.entityManager.transaction(async (entityManager) => {
+      const user = await entityManager.save(
+        this.users.create({
+          isActivated: true,
+          isBlocked: false,
+          ...userEntityLike,
+        }),
+      );
 
-    const email = await this.emailService.createEmail({
-      isPrimary: true,
-      isVerified: false,
-      user,
-      ...emailEntityLike,
-    });
+      const email = await entityManager.save(
+        this.emails.create({
+          isPrimary: true,
+          isVerified: false,
+          user,
+          ...emailEntityLike,
+        }),
+      );
 
-    const account = await this.accountService.createAccount({
-      user,
-      ...accountEntityLike,
-    });
+      const account = await entityManager.save(
+        this.accounts.create({
+          user,
+          ...accountEntityLike,
+        }),
+      );
 
-    return { user, email, account };
+      return { user, email, account };
+    });
   }
 
   /**
    * Sign a new access token for provided user.
    *
-   * @param {UserEntity} user
+   * @param user
    * @returns
    */
   signAccessToken(user: UserEntity): string {
@@ -92,7 +115,7 @@ export class AuthService {
   /**
    * Sign a new refresh token.
    *
-   * @param {RefreshTokenEntity} refreshToken
+   * @param refreshToken
    * @returns
    */
   signRefreshToken(refreshToken: RefreshTokenEntity): string {
