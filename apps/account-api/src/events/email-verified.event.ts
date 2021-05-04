@@ -1,5 +1,5 @@
 import { IEvent } from '@nestjs/cqrs';
-import { EmailEntity } from '../entities';
+import { Email } from '@prisma/client';
 
 /**
  * Email Verified Event
@@ -8,7 +8,7 @@ export class EmailVerifiedEvent implements IEvent {
   /**
    * Constructor
    *
-   * @param {EmailEntity} email
+   * @param email
    */
-  constructor(public readonly email: EmailEntity) {}
+  constructor(public readonly email: Email) {}
 }

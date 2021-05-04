@@ -1,7 +1,7 @@
+import { DatabaseService } from '@app/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { IEmailType } from '../interfaces';
+import { Email } from '@prisma/client';
 import { GetUserEmailsQuery } from '../queries';
-import { EmailService } from '../services';
 
 /**
  * Get User Emails Query Handler
@@ -12,16 +12,21 @@ export class GetUserEmailsQueryHandler
   /**
    * Constructor
    *
-   * @param {EmailService} emailService
+   * @param db
    */
-  constructor(private emailService: EmailService) {}
+  constructor(private db: DatabaseService) {}
 
   /**
    * Execute
    *
-   * @param {GetUserEmailsQuery} query
+   * @param query
+   * @returns
    */
-  async execute({ userId }: GetUserEmailsQuery): Promise<IEmailType[]> {
-    return this.emailService.findManyByUserId(userId);
+  async execute({ userId }: GetUserEmailsQuery): Promise<Email[]> {
+    return this.db.email.findMany({
+      where: {
+        userId,
+      },
+    });
   }
 }

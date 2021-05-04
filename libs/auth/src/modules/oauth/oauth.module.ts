@@ -1,11 +1,16 @@
 import { CommonModule } from '@app/common';
 import { Module } from '@nestjs/common';
+import { OauthAdapterName } from '@prisma/client';
+import { registerEnumType } from '@nestjs/graphql';
 import {
-  FaceboookOAuthProvider,
-  GitHubOAuthProvider,
-  GoogleOAuthProvider,
-} from './oauth-providers';
-import { OAuthService } from './services';
+  FaceboookOauthAdapter,
+  GitHubOauthAdapter,
+  GoogleOauthAdapter,
+} from './oauth-adapters';
+import { OauthService } from './services';
+
+// Register OauthAdapterName for GraphQL
+registerEnumType(OauthAdapterName, { name: 'OauthAdapterName' });
 
 /**
  * OAuth Module
@@ -16,13 +21,13 @@ import { OAuthService } from './services';
     CommonModule,
   ],
   providers: [
-    // OAuth Providers
-    FaceboookOAuthProvider,
-    GoogleOAuthProvider,
-    GitHubOAuthProvider,
+    // Oauth Adapters
+    FaceboookOauthAdapter,
+    GitHubOauthAdapter,
+    GoogleOauthAdapter,
     // Services
-    OAuthService,
+    OauthService,
   ],
-  exports: [OAuthService],
+  exports: [OauthService],
 })
 export class OAuthModule {}

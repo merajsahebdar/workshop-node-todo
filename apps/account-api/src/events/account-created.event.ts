@@ -1,5 +1,5 @@
 import { IEvent } from '@nestjs/cqrs';
-import { AccountEntity, EmailEntity, UserEntity } from '../entities';
+import { Profile, Email, User } from '@prisma/client';
 
 /**
  * Account Created Event
@@ -8,13 +8,13 @@ export class AccountCreatedEvent implements IEvent {
   /**
    * Constructo
    *
-   * @param {UserEntity} user
-   * @param {EmailEntity} email
-   * @param {AccountEntity} account
+   * @param user
+   * @param email
+   * @param account
    */
   constructor(
-    public readonly user: UserEntity,
-    public readonly email: EmailEntity,
-    public readonly account: AccountEntity,
+    public readonly user: User,
+    public readonly email: Email,
+    public readonly profile: Profile,
   ) {}
 }

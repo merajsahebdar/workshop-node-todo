@@ -1,7 +1,8 @@
+import { DatabaseService } from '@app/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { RegisterRefreshTokenCommand } from '../commands';
 import { RefreshTokenCreatedEvent } from '../events';
-import { AuthService, RefreshTokenService } from '../services';
+import { AuthService } from '../services';
 
 /**
  * Register Refresh Token Command Handler
@@ -12,19 +13,20 @@ export class RegisterRefreshTokenCommandHandler
   /**
    * Constructor
    *
-   * @param {EventBus} eventBus
-   * @param {UserService} userService
+   * @param eventBus
+   * @param db
+   * @param auth
    */
   constructor(
     private eventBus: EventBus,
-    private authService: AuthService,
-    private refreshTokenService: RefreshTokenService,
+    private db: DatabaseService,
+    private auth: AuthService,
   ) {}
 
   /**
    * Execute
    *
-   * @param {RegisterRefreshTokenCommand} command
+   * @param command
    * @returns
    */
   async execute({
@@ -32,14 +34,16 @@ export class RegisterRefreshTokenCommandHandler
     clientIp,
     userAgent,
   }: RegisterRefreshTokenCommand): Promise<string> {
-    const refreshToken = await this.refreshTokenService.createRefreshToken({
-      user,
-      clientIp,
-      userAgent,
+    const refreshToken = await this.db.refreshToken.create({
+      data: {
+        clientIp,
+        userAgent,
+        userId: user.id,
+      },
     });
 
     this.eventBus.publish(new RefreshTokenCreatedEvent(user, refreshToken));
 
-    return this.authService.signRefreshToken(refreshToken);
+    return this.auth.signRefreshToken(refreshToken);
   }
 }

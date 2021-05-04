@@ -1,14 +1,14 @@
-import { OAuthProvider } from '@app/auth';
 import { Field, InputType } from '@nestjs/graphql';
+import { OauthAdapterName } from '@prisma/client';
 import { IsEnum } from 'class-validator';
-import { IRequestOAuthInput } from '../interfaces';
+import { RequestOauthInputInterface } from '../interfaces';
 
 /**
- * Request OAuth Input
+ * Request Oauth Input
  */
 @InputType()
-export class RequestOAuthInput implements IRequestOAuthInput {
-  @Field(() => OAuthProvider)
-  @IsEnum(OAuthProvider, { message: 'The oauth provider is not valid.' })
-  provider: OAuthProvider;
+export class RequestOauthInput implements RequestOauthInputInterface {
+  @Field(() => OauthAdapterName)
+  @IsEnum(OauthAdapterName, { message: 'The oauth provider is not valid.' })
+  adapterName: OauthAdapterName;
 }

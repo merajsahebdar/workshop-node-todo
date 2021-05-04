@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { ICheckEmailAvailabilityInput } from '../interfaces';
+import { CheckEmailAvailabilityInput } from '../inputs';
 
 /**
  * Check Email Availability Command
@@ -8,7 +8,7 @@ export class CheckEmailAvailabilityCommand implements ICommand {
   /**
    * Constructor
    *
-   * @param {ICheckEmailAvailabilityInput} input
+   * @param input
    */
-  constructor(public readonly input: ICheckEmailAvailabilityInput) {}
+  constructor(public readonly input: CheckEmailAvailabilityInput) {}
 }

@@ -1,94 +1,123 @@
-import { OAuthService } from '@app/auth';
+import { OauthService } from '@app/auth';
+import { DatabaseService } from '@app/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { AuthorizeOAuthCommand } from '../commands';
-import { UserEntity } from '../entities';
+import { User } from '@prisma/client';
+import { AuthorizeOauthCommand } from '../commands';
 import { OAuthTicketCreatedEvent, UserSignedUpEvent } from '../events';
-import {
-  AuthService,
-  EmailService,
-  OAuthTicketService,
-  UserService,
-} from '../services';
+import { AuthService } from '../services';
 
 /**
- * Authorize OAuth Command Handler
+ * Authorize Oauth Command Handler
  */
-@CommandHandler(AuthorizeOAuthCommand)
-export class AuthorizeOAuthCommandHandler
-  implements ICommandHandler<AuthorizeOAuthCommand> {
+@CommandHandler(AuthorizeOauthCommand)
+export class AuthorizeOauthCommandHandler
+  implements ICommandHandler<AuthorizeOauthCommand> {
   /**
    * Constructor
    *
-   * @param {EventBus} eventBus
-   * @param {OAuthService} oauthService
-   * @param {AuthService} authService
-   * @param {UserService} userService
-   * @param {EmailService} emailService
-   * @param {OAuthTicketService} oauthTicketService
+   * @param eventBus
+   * @param oauth
+   * @param auth
    */
   constructor(
     private eventBus: EventBus,
-    private oauthService: OAuthService,
-    private authService: AuthService,
-    private userService: UserService,
-    private emailService: EmailService,
-    private oauthTicketService: OAuthTicketService,
+    private db: DatabaseService,
+    private oauth: OauthService,
+    private auth: AuthService,
   ) {}
 
   /**
    * Execute
    *
-   * @param {AuthorizeOAuthCommand} command
+   * @param command
    * @returns
    */
-  async execute({
-    input,
-  }: AuthorizeOAuthCommand): Promise<[UserEntity, string]> {
+  async execute({ input }: AuthorizeOauthCommand): Promise<[User, string]> {
     const [
-      { email: oauthEmail, account: oauthAccount },
+      { email: oauthEmail, profile: oauthProfile },
       encryptedTicketData,
-    ] = await this.oauthService.authorizeOAuth(input.provider, input.code);
+    ] = await this.oauth.authorizeOauth(input.adapterName, input.code);
 
-    const isRegistered = await this.emailService.isRegistered(
-      oauthEmail.address,
-    );
+    const user = await this.db.user.findFirst({
+      where: {
+        emails: {
+          some: {
+            address: oauthEmail.address,
+          },
+        },
+      },
+    });
 
-    if (isRegistered) {
-      const user = await this.userService.findByEmailAddress(
-        oauthEmail.address,
-      );
-
-      await this.oauthTicketService.updateOAuthTicketByUser(user, {
-        provider: input.provider,
-        encryptedTicketData,
+    if (user) {
+      const oauthTicket = await this.db.oauthTicket.findFirst({
+        where: { adapterName: input.adapterName, userId: user.id },
       });
 
-      return [user, this.authService.signAccessToken(user)];
+      if (oauthTicket) {
+        await this.db.oauthTicket.update({
+          where: {
+            id: oauthTicket.id,
+          },
+          data: {
+            encryptedTicketData,
+          },
+        });
+      } else {
+        await this.db.oauthTicket.create({
+          data: {
+            adapterName: input.adapterName,
+            encryptedTicketData,
+            userId: user.id,
+          },
+        });
+      }
+
+      return [user, this.auth.signAccessToken(user)];
     } else {
-      // Create User
-      const { user, email, account } = await this.authService.signUp(
-        {},
-        {
-          address: oauthEmail.address,
-          isVerified: true,
+      const {
+        user: {
+          emails: [email],
+          ...user
         },
-        {
-          nickname: oauthAccount.nickname,
+        ...profile
+      } = await this.db.profile.create({
+        include: {
+          user: {
+            include: {
+              emails: true,
+            },
+          },
         },
-      );
+        data: {
+          ...oauthProfile,
+          user: {
+            create: {
+              isActivated: true,
+              isBlocked: false,
+              emails: {
+                create: {
+                  ...oauthEmail,
+                  isPrimary: true,
+                  isVerified: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-      const oauthTicket = await this.oauthTicketService.updateOAuthTicketByUser(
-        user,
-        {
-          provider: input.provider,
+      const oauthTicket = await this.db.oauthTicket.create({
+        data: {
+          adapterName: input.adapterName,
           encryptedTicketData,
+          userId: user.id,
         },
-      );
+      });
 
-      this.eventBus.publish(new UserSignedUpEvent(user, email, account));
+      this.eventBus.publish(new UserSignedUpEvent(user, email, profile));
       this.eventBus.publish(new OAuthTicketCreatedEvent(oauthTicket, user));
 
-      return [user, this.authService.signAccessToken(user)];
+      return [user, this.auth.signAccessToken(user)];
     }
   }
 }

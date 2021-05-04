@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { AccountEntity, EmailEntity, UserEntity } from '../entities';
+import { Email, Profile, User } from '@prisma/client';
 
 /**
  * Send Email Verification Message Command
@@ -8,13 +8,13 @@ export class SendEmailVerificationMessageCommand implements ICommand {
   /**
    * Constructor
    *
-   * @param {UserEntity} user
-   * @param {EmailEntity} email
-   * @param {AccountEntity} account
+   * @param user
+   * @param email
+   * @param profile
    */
   constructor(
-    public readonly user: UserEntity,
-    public readonly email: EmailEntity,
-    public readonly account: AccountEntity,
+    public readonly user: User,
+    public readonly email: Email,
+    public readonly profile: Profile,
   ) {}
 }

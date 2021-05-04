@@ -1,11 +1,11 @@
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { IEmailType } from '../interfaces';
+import { GraphEmailInterface } from '../interfaces';
 
 /**
- * Email Type
+ * Email
  */
 @ObjectType('Email')
-export class EmailType implements IEmailType {
+export class GraphEmail implements GraphEmailInterface {
   @Field()
   id: string;
 
@@ -25,5 +25,5 @@ export class EmailType implements IEmailType {
   updatedAt: string;
 
   @Field(() => GraphQLISODateTime, { nullable: true })
-  removedAt?: string;
+  deletedAt?: string;
 }

@@ -1,5 +1,5 @@
 import { IEvent } from '@nestjs/cqrs';
-import { RefreshTokenEntity, UserEntity } from '../entities';
+import { RefreshToken, User } from '@prisma/client';
 
 /**
  * Refresh Toke Created Event
@@ -8,11 +8,11 @@ export class RefreshTokenCreatedEvent implements IEvent {
   /**
    * Constructor
    *
-   * @param {UserEntity} user
-   * @param {RefreshTokenEntity} refreshToken
+   * @param user
+   * @param refreshToken
    */
   constructor(
-    public readonly user: UserEntity,
-    public readonly refreshToken: RefreshTokenEntity,
+    public readonly user: User,
+    public readonly refreshToken: RefreshToken,
   ) {}
 }

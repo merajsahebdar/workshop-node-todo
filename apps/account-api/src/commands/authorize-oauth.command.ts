@@ -1,14 +1,14 @@
 import { ICommand } from '@nestjs/cqrs';
-import { IAuthorizeOAuthInput } from '../interfaces';
+import { AuthorizeOauthInput } from '../inputs';
 
 /**
- * Authorize OAuth Command
+ * Authorize Oauth Command
  */
-export class AuthorizeOAuthCommand implements ICommand {
+export class AuthorizeOauthCommand implements ICommand {
   /**
    * Constructor
    *
-   * @param {IAuthorizeOAuthInput} input
+   * @param input
    */
-  constructor(public readonly input: IAuthorizeOAuthInput) {}
+  constructor(public readonly input: AuthorizeOauthInput) {}
 }

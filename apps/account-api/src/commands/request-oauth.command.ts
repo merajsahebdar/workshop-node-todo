@@ -1,14 +1,14 @@
 import { ICommand } from '@nestjs/cqrs';
-import { IRequestOAuthInput } from '../interfaces';
+import { RequestOauthInput } from '../inputs';
 
 /**
- * Request OAuth Command
+ * Request Oauth Command
  */
-export class RequestOAuthCommand implements ICommand {
+export class RequestOauthCommand implements ICommand {
   /**
    * Constructor
    *
    * @param {IRequestOAuthInput} input
    */
-  constructor(public readonly input: IRequestOAuthInput) {}
+  constructor(public readonly input: RequestOauthInput) {}
 }

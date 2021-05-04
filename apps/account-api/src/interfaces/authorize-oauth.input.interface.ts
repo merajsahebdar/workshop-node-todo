@@ -1,9 +1,9 @@
-import { OAuthProvider } from '@app/auth';
+import { OauthAdapterName } from '@prisma/client';
 
 /**
- * Authorize OAuth Input Interface
+ * Authorize Oauth Input Interface
  */
-export interface IAuthorizeOAuthInput {
-  provider: OAuthProvider;
+export interface AuthorizeOauthInputInterface {
+  adapterName: OauthAdapterName;
   code: string;
 }

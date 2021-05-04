@@ -1,9 +1,7 @@
+import { CasbinRbacPolicy, Prisma } from '@prisma/client';
+import { DatabaseService } from '@app/common';
 import { Injectable } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { BatchAdapter, FilteredAdapter, Helper, Model } from 'casbin';
-import { EntityManager, FindConditions } from 'typeorm';
-import { CasbinRbacPolicyEntity } from '../entities';
-import { CasbinRbacPoliciesRepository } from '../repositories';
 
 /**
  * RBAC Casbin Adapter
@@ -18,15 +16,9 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   /**
    * Constructor
    *
-   * @param connection
-   * @param policies
+   * @param db
    */
-  constructor(
-    @InjectEntityManager()
-    private entityManager: EntityManager,
-    @InjectRepository(CasbinRbacPolicyEntity)
-    private policies: CasbinRbacPoliciesRepository,
-  ) {}
+  constructor(private db: DatabaseService) {}
 
   /**
    * Whether the current policy is filtered or not.
@@ -44,7 +36,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
    * @param model
    * @returns
    */
-  private loadPolicyLine(line: CasbinRbacPolicyEntity, model: Model) {
+  private loadPolicyLine(line: CasbinRbacPolicy, model: Model) {
     const value =
       line.ptype +
       ', ' +
@@ -62,7 +54,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
    * @returns
    */
   async loadPolicy(model: Model): Promise<void> {
-    const lines = await this.policies.find();
+    const lines = await this.db.casbinRbacPolicy.findMany();
 
     for (const line of lines) {
       this.loadPolicyLine(line, model);
@@ -73,16 +65,13 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
    * Load Filtered Policy
    *
    * @param model
-   * @param filter
+   * @param where
    * @returns
    */
-  async loadFilteredPolicy(
-    model: Model,
-    filter: FindConditions<CasbinRbacPolicyEntity>,
-  ): Promise<void> {
-    const lines = await this.policies.find({
-      where: filter,
-      order: { updatedAt: 'DESC' },
+  async loadFilteredPolicy(model: Model, where: any): Promise<void> {
+    const lines = await this.db.casbinRbacPolicy.findMany({
+      where: { OR: where },
+      orderBy: { updatedAt: 'desc' },
     });
 
     for (const line of lines) {
@@ -102,8 +91,8 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
   private createPolicyLine(
     ptype: string,
     policy: string[],
-  ): CasbinRbacPolicyEntity {
-    const line = this.policies.create();
+  ): Prisma.CasbinRbacPolicyCreateInput {
+    const line: Prisma.CasbinRbacPolicyCreateInput = {};
 
     line.ptype = ptype;
 
@@ -141,9 +130,9 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
    * @returns
    */
   async savePolicy(model: Model): Promise<boolean> {
-    await this.policies.clear();
+    await this.db.casbinRbacPolicy.deleteMany();
 
-    const lines: CasbinRbacPolicyEntity[] = [];
+    const lines: Prisma.CasbinRbacPolicyCreateInput[] = [];
 
     let astMap = model.model.get('p');
     if (astMap) {
@@ -165,9 +154,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
       }
     }
 
-    await this.entityManager.transaction(async (entityManager) => {
-      await entityManager.save(lines);
-    });
+    this.db.casbinRbacPolicy.createMany({ data: lines });
 
     return true;
   }
@@ -182,7 +169,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
    */
   async addPolicy(_: string, ptype: string, policy: string[]): Promise<void> {
     const line = this.createPolicyLine(ptype, policy);
-    await this.policies.save(line);
+    await this.db.casbinRbacPolicy.create({ data: line });
   }
 
   /**
@@ -198,15 +185,13 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
     ptype: string,
     policies: string[][],
   ): Promise<void> {
-    const lines: CasbinRbacPolicyEntity[] = [];
+    const lines: Prisma.CasbinRbacPolicyCreateInput[] = [];
     for (const policy of policies) {
       const line = this.createPolicyLine(ptype, policy);
       lines.push(line);
     }
 
-    await this.entityManager.transaction(async (entityManager) => {
-      await entityManager.save(lines);
-    });
+    await this.db.casbinRbacPolicy.createMany({ data: lines });
   }
 
   /**
@@ -223,7 +208,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
     policy: string[],
   ): Promise<void> {
     const line = this.createPolicyLine(ptype, policy);
-    await this.policies.delete(line);
+    await this.db.casbinRbacPolicy.delete({ where: line });
   }
 
   /**
@@ -239,12 +224,12 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
     ptype: string,
     policies: string[][],
   ): Promise<void> {
-    await this.entityManager.transaction(async (entityManager) => {
-      for (const policy of policies) {
-        const line = this.createPolicyLine(ptype, policy);
-        await entityManager.delete(CasbinRbacPolicyEntity, line);
-      }
-    });
+    const lines: Prisma.CasbinRbacPolicyCreateInput[] = [];
+    for (const policy of policies) {
+      lines.push(this.createPolicyLine(ptype, policy));
+    }
+
+    await this.db.casbinRbacPolicy.deleteMany({ where: { OR: lines } });
   }
 
   /**
@@ -262,7 +247,7 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
     fieldIndex: number,
     ...fieldValues: string[]
   ): Promise<void> {
-    const line = this.policies.create();
+    const line: Prisma.CasbinRbacPolicyCreateInput = {};
 
     line.ptype = ptype;
 
@@ -290,6 +275,6 @@ export class RbacCasbinAdapter implements FilteredAdapter, BatchAdapter {
       line.v5 = fieldValues[5 - fieldIndex];
     }
 
-    await this.policies.delete(line);
+    await this.db.casbinRbacPolicy.delete({ where: line });
   }
 }

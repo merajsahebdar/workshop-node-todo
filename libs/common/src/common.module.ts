@@ -1,19 +1,21 @@
 import { Module, Provider } from '@nestjs/common';
 import {
   CookieService,
+  DatabaseService,
   HashService,
   JwtService,
   SignedParamsService,
 } from './services';
-import { IsUniqueConstraint } from './validators';
+import { IsUniqueValidatorConstraint } from './validators';
 
 // Services
 const services: Provider[] = [
+  DatabaseService,
   JwtService,
   HashService,
   CookieService,
   SignedParamsService,
-  IsUniqueConstraint,
+  IsUniqueValidatorConstraint,
 ];
 
 /**

@@ -1,7 +1,7 @@
 /**
  * Verify Email Input Interface
  */
-export interface IVerifyEmailInput {
+export interface VerifyEmailInputInterface {
   id: string;
   address: string;
   expires: number;

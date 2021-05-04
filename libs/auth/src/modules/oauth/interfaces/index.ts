@@ -1,2 +1,2 @@
-export * from './oauth-provider.interface';
+export * from './oauth-adapter.interface';
 export * from './oauth-user.interface';

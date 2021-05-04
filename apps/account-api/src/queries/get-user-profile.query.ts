@@ -1,11 +1,11 @@
 /**
- * Get User Account Query
+ * Get User Profile Query
  */
-export class GetUserAccountQuery {
+export class GetUserProfileQuery {
   /**
    * Constructor
    *
-   * @param {string} userId
+   * @param userId
    */
   constructor(public readonly userId: string) {}
 }

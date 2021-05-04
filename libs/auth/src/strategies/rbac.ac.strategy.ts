@@ -2,7 +2,6 @@ import { every, getArgs, getRequest } from '@app/common';
 import { ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Enforcer } from 'casbin';
-import { Like } from 'typeorm';
 import {
   RBAC_ENFORCER,
   RBAC_PERMISSIONS_METADATA,
@@ -31,7 +30,7 @@ export class RbacStrategy implements IAcStrategy {
   /**
    * Check whether the authorized user has permission to continue or not.
    *
-   * @param {ExecutionContext} context
+   * @param context
    * @returns
    */
   async hasPermission(context: ExecutionContext): Promise<boolean> {
@@ -49,8 +48,8 @@ export class RbacStrategy implements IAcStrategy {
       const userId = authorizedUser.id;
 
       await this.enforcer.loadFilteredPolicy([
-        { ptype: 'p', v0: Like('role:%') },
-        { ptype: 'g', v0: Like('role:%') },
+        { ptype: 'p', v0: { startsWith: 'role:' } },
+        { ptype: 'g', v0: { startsWith: 'role:' } },
         { ptype: 'p', v0: `user:${userId}` },
         { ptype: 'g', v0: `user:${userId}` },
       ]);

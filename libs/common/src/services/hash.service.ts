@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcryptjs';
 import crypto, { BinaryLike } from 'crypto';
 
 // Data Interface
@@ -13,9 +14,9 @@ export class HashService {
   /**
    * Constructor
    *
-   * @param {ConfigService} configService
+   * @param config
    */
-  constructor(private configService: ConfigService) {}
+  constructor(private config: ConfigService) {}
 
   /**
    * Normalize data before hash.
@@ -47,7 +48,7 @@ export class HashService {
    */
   hmac(algorithm: string, data: IData): string {
     return crypto
-      .createHmac(algorithm, this.configService.get('common.appKey') as string)
+      .createHmac(algorithm, this.config.get('common.appKey') as string)
       .update(this.normalizeData(data))
       .digest('hex');
   }
@@ -64,7 +65,7 @@ export class HashService {
     const cipher = crypto.createCipheriv(
       'aes-256-gcm',
       Buffer.from(
-        (this.configService.get('common.appKey') as string).substr(0, 32),
+        (this.config.get('common.appKey') as string).substr(0, 32),
         'utf-8',
       ),
       iv,
@@ -92,7 +93,7 @@ export class HashService {
     const decipher = crypto.createDecipheriv(
       'aes-256-gcm',
       Buffer.from(
-        (this.configService.get('common.appKey') as string).substr(0, 32),
+        (this.config.get('common.appKey') as string).substr(0, 32),
         'utf-8',
       ),
       iv,
@@ -103,5 +104,22 @@ export class HashService {
     return JSON.parse(
       Buffer.concat([decipher.update(data), decipher.final()]).toString(),
     );
+  }
+
+  /**
+   * Hash
+   *
+   * @param normal
+   * @param hashed
+   * @returns
+   */
+  async bcrypt(normal: string): Promise<string>;
+  async bcrypt(normal: string, hashed?: string): Promise<boolean>;
+  async bcrypt(normal: string, hashed?: string) {
+    if (!hashed) {
+      return await bcrypt.hash(normal, await bcrypt.genSalt());
+    }
+
+    return bcrypt.compare(normal, hashed);
   }
 }

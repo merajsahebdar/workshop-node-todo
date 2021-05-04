@@ -1,76 +1,79 @@
+import { OauthAdapterName } from '@prisma/client';
 import { HashService } from '@app/common';
 import { Injectable } from '@nestjs/common';
-import { OAuthProvider } from '../enums';
-import { IOAuthProvider, IOAuthUser } from '../interfaces';
+import { OauthAdapter, OauthUser } from '../interfaces';
 import {
-  FaceboookOAuthProvider,
-  GitHubOAuthProvider,
-  GoogleOAuthProvider,
-} from '../oauth-providers';
+  FaceboookOauthAdapter,
+  GitHubOauthAdapter,
+  GoogleOauthAdapter,
+} from '../oauth-adapters';
 
 /**
- * OAuth Service
+ * Oauth Service
  */
 @Injectable()
-export class OAuthService {
+export class OauthService {
   /**
    * Constructor
    *
-   * @param {FaceboookOAuthProvider} facebook
+   * @param hash
+   * @param facebookAdapter
+   * @param githubAdapter
+   * @param googleAdapter
    */
   constructor(
-    private hashService: HashService,
-    private facebook: FaceboookOAuthProvider,
-    private github: GitHubOAuthProvider,
-    private google: GoogleOAuthProvider,
+    private hash: HashService,
+    private facebookAdapter: FaceboookOauthAdapter,
+    private githubAdapter: GitHubOauthAdapter,
+    private googleAdapter: GoogleOauthAdapter,
   ) {}
 
   /**
-   * Get Provider Object
+   * Get Adapter Instance
    *
-   * @param {OAuthProvider} provider
+   * @param adapterName
    * @returns
    */
-  private getProviderObject(provider: OAuthProvider): IOAuthProvider {
-    switch (provider) {
-      case OAuthProvider.FACEBOOK:
-        return this.facebook;
-      case OAuthProvider.GITHUB:
-        return this.github;
-      case OAuthProvider.GOOGLE:
-        return this.google;
+  private getAdapterInstance(adapterName: OauthAdapterName): OauthAdapter {
+    switch (adapterName) {
+      case OauthAdapterName.FACEBOOK:
+        return this.facebookAdapter;
+      case OauthAdapterName.GITHUB:
+        return this.githubAdapter;
+      case OauthAdapterName.GOOGLE:
+        return this.googleAdapter;
     }
   }
 
   /**
-   * Request OAuth
+   * Request Oauth
    *
-   * @param {OAuthProvider} provider
-   * @param {string[]} scope
+   * @param adapterName
+   * @param scope
    * @returns
    */
-  async requestOAuth(
-    provider: OAuthProvider,
+  async requestOauth(
+    adapterName: OauthAdapterName,
     scope: string[] = [],
   ): Promise<string> {
-    return await this.getProviderObject(provider).requestOAuth(scope);
+    return await this.getAdapterInstance(adapterName).requestOauth(scope);
   }
 
   /**
-   * Authorize OAuth
+   * Authorize Oauth
    *
-   * @param {OAuthProvider} provider
-   * @param {string} code
+   * @param adapterName
+   * @param code
    * @returns
    */
-  async authorizeOAuth(
-    provider: OAuthProvider,
+  async authorizeOauth(
+    adapterName: OauthAdapterName,
     code: string,
-  ): Promise<[IOAuthUser, Buffer]> {
-    const [ticket, user] = await this.getProviderObject(
-      provider,
-    ).authorizeOAuth(code);
+  ): Promise<[OauthUser, Buffer]> {
+    const [ticket, user] = await this.getAdapterInstance(
+      adapterName,
+    ).authorizeOauth(code);
 
-    return [user, this.hashService.encrypt(ticket)];
+    return [user, this.hash.encrypt(ticket)];
   }
 }

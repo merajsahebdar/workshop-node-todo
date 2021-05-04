@@ -1,10 +1,8 @@
 import { CommonModule } from '@app/common';
 import { Module, Provider } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { newEnforcer, newModel } from 'casbin';
 import { RbacCasbinAdapter } from './casbin-adapters';
 import { RBAC_ENFORCER } from './contants';
-import { CasbinRbacPolicyEntity } from './entities';
 import {
   RbacStrategy,
   JwtAuthStrategy,
@@ -35,8 +33,6 @@ const RbacEnforcerProvider: Provider = {
  */
 @Module({
   imports: [
-    // Third-party Modules
-    TypeOrmModule.forFeature([CasbinRbacPolicyEntity]),
     // App Modules
     CommonModule,
   ],

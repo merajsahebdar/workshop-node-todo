@@ -80,7 +80,7 @@ export class UserSaga {
         return new SendEmailVerificationMessageCommand(
           event.user,
           event.email,
-          event.account,
+          event.profile,
         );
       }),
     );
@@ -103,7 +103,7 @@ export class UserSaga {
           // Registered user has all accesses to his own resource.
           [`user:${event.user.id}`, `users:${event.user.id}`, '*'],
           [`user:${event.user.id}`, `emails:${event.email.id}`, '*'],
-          [`user:${event.user.id}`, `accounts:${event.account.id}`, '*'],
+          [`user:${event.user.id}`, `accounts:${event.profile.id}`, '*'],
         ]);
       }),
     );

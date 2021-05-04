@@ -14,31 +14,32 @@ export class SendEmailVerificationMessageCommandHandler
   /**
    * Constructor
    *
-   * @param {Queue} mailerQueue
-   * @param {ConfigService} configService
-   * @param {SignedParamsService} signedParamsService
+   * @param config
+   * @param signedParams
+   * @param mailing
    */
   constructor(
-    private configService: ConfigService,
-    private signedParamsService: SignedParamsService,
-    private mailingService: MailingService,
+    private config: ConfigService,
+    private signedParams: SignedParamsService,
+    private mailing: MailingService,
   ) {}
 
   /**
    * Execute
    *
-   * @param {SendUserVerificationEmailCommand} command
+   * @param command
+   * @returns
    */
   async execute({
-    account,
+    profile,
     email: { id, address },
   }: SendEmailVerificationMessageCommand): Promise<void> {
-    const [expires, signature] = this.signedParamsService.sign({
+    const [expires, signature] = this.signedParams.sign({
       id,
       address,
     });
 
-    const verificationURL = new URL(
+    const verificationUrl = new URL(
       stringify(
         {
           address,
@@ -47,15 +48,15 @@ export class SendEmailVerificationMessageCommandHandler
         },
         { addQueryPrefix: true },
       ),
-      this.configService.get('app.setting.userVerificationURL'),
+      this.config.get('app.settings.emailVerificationUrl'),
     );
 
-    await this.mailingService.sendMail({
+    await this.mailing.sendMail({
       to: address,
       template: asset('templates', 'account', 'email-verification.pug'),
       context: {
-        account,
-        verificationURL: verificationURL.toString(),
+        profile,
+        verificationUrl: verificationUrl.toString(),
       },
     });
   }

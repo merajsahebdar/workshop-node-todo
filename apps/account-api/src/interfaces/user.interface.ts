@@ -1,18 +1,13 @@
-import { INodeEntity, INodeType } from '@app/common';
-import { IEmailType } from './email.interface';
+import { GraphNodeInterface } from '@app/common';
+import { GraphEmailInterface } from './email.interface';
+import { GraphProfileInterface } from './profile.interface';
 
 /**
- * User Type Interface
+ * Graph User Interface
  */
-export interface IUserType extends INodeType {
-  emails: IEmailType[];
+export interface GraphUserInterface extends GraphNodeInterface {
+  profile: GraphProfileInterface;
+  emails: GraphEmailInterface[];
   isActivated: boolean;
   isBlocked: boolean;
-}
-
-/**
- * User Entity Interface
- */
-export interface IUserEntity extends INodeEntity, IUserType {
-  password?: string;
 }

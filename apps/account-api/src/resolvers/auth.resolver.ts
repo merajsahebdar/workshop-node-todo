@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import {
   AuthGuard,
   AuthorizedUser,
@@ -14,17 +15,16 @@ import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import {
-  AuthorizeOAuthCommand,
+  AuthorizeOauthCommand,
   RegisterRefreshTokenCommand,
-  RequestOAuthCommand,
+  RequestOauthCommand,
   SignAccessTokenCommand,
   SignInCommand,
   SignUpCommand,
 } from '../commands';
-import { UserEntity } from '../entities';
 import {
-  AuthorizeOAuthInput,
-  RequestOAuthInput,
+  AuthorizeOauthInput,
+  RequestOauthInput,
   SignInInput,
   SignUpInput,
 } from '../inputs';
@@ -39,31 +39,27 @@ export class AuthResolver {
   /**
    * Constructor
    *
-   * @param {QueryBus} queryBus
-   * @param {CommandBus} commandBus
-   * @param {CookieService} cookieService
+   * @param commandBus
+   * @param cookie
    */
-  constructor(
-    private commandBus: CommandBus,
-    private cookieService: CookieService,
-  ) {}
+  constructor(private commandBus: CommandBus, private cookie: CookieService) {}
 
   /**
    * Return a new signed access token from given refresh token.
    *
-   * @param {UserEntity} user
+   * @param user
    * @returns
    */
   @UseGuards(AuthGuard(RefreshTokenAuthStrategy))
   @Mutation(() => String)
-  async refreshToken(@AuthorizedUser() user: UserEntity): Promise<string> {
+  async refreshToken(@AuthorizedUser() user: User): Promise<string> {
     return this.commandBus.execute(new SignAccessTokenCommand(user));
   }
 
   /**
    * Sign In
    *
-   * @param {SignInInput} input
+   * @param input
    * @returns
    */
   @Mutation(() => String)
@@ -85,7 +81,7 @@ export class AuthResolver {
       ),
     );
 
-    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+    this.cookie.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
 
     return accessToken;
   }
@@ -93,7 +89,7 @@ export class AuthResolver {
   /**
    * Sign Up
    *
-   * @param {SignUpInput} input
+   * @param input
    * @returns
    */
   @Mutation(() => String)
@@ -115,7 +111,7 @@ export class AuthResolver {
       ),
     );
 
-    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+    this.cookie.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
 
     return accessToken;
   }
@@ -123,27 +119,27 @@ export class AuthResolver {
   /**
    * Request for oauth sign-in (or sign-up).
    *
-   * @param {RequestOAuthInput} input
+   * @param input
    * @returns
    */
   @Mutation(() => String)
-  async requestOAuth(@Args('input') input: RequestOAuthInput): Promise<string> {
-    return this.commandBus.execute(new RequestOAuthCommand(input));
+  async requestOAuth(@Args('input') input: RequestOauthInput): Promise<string> {
+    return this.commandBus.execute(new RequestOauthCommand(input));
   }
 
   /**
    * Authorize oauth response.
    *
-   * @param {AuthorizeOAuthInput} input
+   * @param input
    * @returns
    */
   @Mutation(() => String)
   async authorizeOAuth(
     @Context() { req }: IGqlContext,
-    @Args('input') input: AuthorizeOAuthInput,
+    @Args('input') input: AuthorizeOauthInput,
   ): Promise<string> {
     const [user, accessToken] = await this.commandBus.execute(
-      new AuthorizeOAuthCommand(input),
+      new AuthorizeOauthCommand(input),
     );
 
     // Register refresh token
@@ -155,7 +151,7 @@ export class AuthResolver {
       ),
     );
 
-    this.cookieService.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
+    this.cookie.setCookie(REFRESH_TOKEN_COOKIE_KEY, refreshToken);
 
     return accessToken;
   }

@@ -1,11 +1,11 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IVerifyEmailInput } from '../interfaces';
+import { VerifyEmailInputInterface } from '../interfaces';
 
 /**
  * Verify User Input
  */
 @InputType()
-export class VerifyEmailInput implements IVerifyEmailInput {
+export class VerifyEmailInput implements VerifyEmailInputInterface {
   @Field()
   id: string;
 

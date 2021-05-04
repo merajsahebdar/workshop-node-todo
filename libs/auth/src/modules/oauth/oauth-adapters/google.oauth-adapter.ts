@@ -2,13 +2,13 @@ import { httpClient } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { stringify } from 'qs';
-import { IOAuthProvider, AuthorizeOAuthResponse } from '../interfaces';
+import { OauthAdapter, AuthorizeOauthResponse } from '../interfaces';
 
 /**
- * Google OAuth Provider
+ * Google Oauth Adapter
  */
 @Injectable()
-export class GoogleOAuthProvider implements IOAuthProvider {
+export class GoogleOauthAdapter implements OauthAdapter {
   /**
    * Default Scopes
    */
@@ -21,22 +21,22 @@ export class GoogleOAuthProvider implements IOAuthProvider {
   /**
    * Constructor
    *
-   * @param {ConfigService} configService
+   * @param config
    */
-  constructor(private configService: ConfigService) {}
+  constructor(private config: ConfigService) {}
 
   /**
-   * Request OAuth
+   * Request Oauth
    *
-   * @param {string[]} scope
+   * @param scope
    * @returns
    */
-  requestOAuth(scope: string[] = []): string {
+  requestOauth(scope: string[] = []): string {
     return new URL(
       stringify(
         {
-          client_id: this.configService.get('oauth.google.clientId'),
-          redirect_uri: this.configService.get('oauth.google.redirectUri'),
+          client_id: this.config.get('oauth.google.clientId'),
+          redirect_uri: this.config.get('oauth.google.redirectUri'),
           scope: [...this.defaultScope, ...scope].join(' '),
           response_type: 'code',
           access_type: 'offline',
@@ -51,21 +51,21 @@ export class GoogleOAuthProvider implements IOAuthProvider {
   }
 
   /**
-   * Authorize OAuth
+   * Authorize Oauth
    *
-   * @param {string} code
+   * @param code
    * @returns
    */
-  async authorizeOAuth(code: string): Promise<AuthorizeOAuthResponse> {
+  async authorizeOauth(code: string): Promise<AuthorizeOauthResponse> {
     const ticket = await httpClient('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        client_id: this.configService.get('oauth.google.clientId'),
-        client_secret: this.configService.get('oauth.google.clientSecret'),
-        redirect_uri: this.configService.get('oauth.google.redirectUri'),
+        client_id: this.config.get('oauth.google.clientId'),
+        client_secret: this.config.get('oauth.google.clientSecret'),
+        redirect_uri: this.config.get('oauth.google.redirectUri'),
         grant_type: 'authorization_code',
         code,
       }),
@@ -88,7 +88,7 @@ export class GoogleOAuthProvider implements IOAuthProvider {
     return [
       ticket,
       {
-        account: { nickname: `${info.given_name} ${info.family_name}` },
+        profile: { name: `${info.given_name} ${info.family_name}` },
         email: {
           address: info.email,
         },

@@ -1,17 +1,9 @@
-import { INodeEntity, INodeType } from '@app/common';
-import { IUserEntity } from './user.interface';
+import { GraphNodeInterface } from '@app/common';
 
 /**
- * Refresh Token Type Interface
+ * Graph Refresh Token Interface
  */
-export interface IRefreshTokenType extends INodeType {
+export interface GraphRefreshTokenInterface extends GraphNodeInterface {
   userAgent: string;
   clientIp: string;
-}
-
-/**
- * Refresh Token Entity Interface
- */
-export interface IRefreshTokenEntity extends INodeEntity, IRefreshTokenType {
-  user: IUserEntity;
 }

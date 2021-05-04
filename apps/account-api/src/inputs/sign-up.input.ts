@@ -2,18 +2,17 @@ import { IsUnique, MatchWith } from '@app/common';
 import { Field, InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { IsEmail, Length, ValidateNested } from 'class-validator';
-import { EmailEntity } from '../entities';
 import {
-  ISignUpAccountInput,
-  ISignUpEmailInput,
-  ISignUpInput,
+  SignUpProfileInputInterface,
+  SignUpEmailInputInterface,
+  SignUpInputInterface,
 } from '../interfaces';
 
 /**
- * Sign Up Account Type
+ * Sign Up Profile Input
  */
 @InputType()
-class SignUpAccountInput implements ISignUpAccountInput {
+class SignUpProfileInput implements SignUpProfileInputInterface {
   @Field()
   forename: string;
 
@@ -22,15 +21,20 @@ class SignUpAccountInput implements ISignUpAccountInput {
 }
 
 /**
- * Sign Up Email Input Type
+ * Sign Up Email Input
  */
 @InputType()
-class SignUpEmailInput implements ISignUpEmailInput {
+class SignUpEmailInput implements SignUpEmailInputInterface {
   @Field()
   @IsEmail(undefined, { message: 'The email address is not valid.' })
-  @IsUnique([EmailEntity, 'address'], {
-    message: 'The email address is not available.',
-  })
+  @IsUnique(
+    async (address: string, db) => {
+      return (await db.email.count({ where: { address } })) === 0;
+    },
+    {
+      message: 'The provided email address is not available.',
+    },
+  )
   readonly address: string;
 }
 
@@ -38,7 +42,7 @@ class SignUpEmailInput implements ISignUpEmailInput {
  * Sign Up Input
  */
 @InputType()
-export class SignUpInput implements ISignUpInput {
+export class SignUpInput implements SignUpInputInterface {
   @Field()
   @Length(8, undefined, {
     message: 'The password must contains at least 8 characters.',
@@ -56,8 +60,8 @@ export class SignUpInput implements ISignUpInput {
   @Type(() => SignUpEmailInput)
   email: SignUpEmailInput;
 
-  @Field(() => SignUpAccountInput)
+  @Field(() => SignUpProfileInput)
   @ValidateNested({ each: true })
-  @Type(() => SignUpAccountInput)
-  account: SignUpAccountInput;
+  @Type(() => SignUpProfileInput)
+  profile: SignUpProfileInput;
 }

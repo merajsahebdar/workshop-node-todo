@@ -5,7 +5,7 @@ export class GetUserQuery {
   /**
    * Constructor
    *
-   * @param {string} id
+   * @param id
    */
   constructor(public readonly id: string) {}
 }

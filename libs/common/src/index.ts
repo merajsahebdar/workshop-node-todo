@@ -4,7 +4,6 @@ export * from './constants';
 export * from './errors';
 export * from './filters';
 export * from './interfaces';
-export * from './modules';
 export * from './pipes';
 export * from './types';
 export * from './services';

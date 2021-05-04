@@ -1,7 +1,7 @@
 /**
- * Sign Up Account Input Interface
+ * Sign Up Profile Input Interface
  */
-export interface ISignUpAccountInput {
+export interface SignUpProfileInputInterface {
   forename: string;
   surname: string;
 }
@@ -9,16 +9,16 @@ export interface ISignUpAccountInput {
 /**
  * Sign Up Email Input Interface
  */
-export interface ISignUpEmailInput {
+export interface SignUpEmailInputInterface {
   address: string;
 }
 
 /**
  * Sign Up Input Interface
  */
-export interface ISignUpInput {
+export interface SignUpInputInterface {
   password: string;
   passwordConfirm: string;
-  email: ISignUpEmailInput;
-  account: ISignUpAccountInput;
+  email: SignUpEmailInputInterface;
+  profile: SignUpProfileInputInterface;
 }

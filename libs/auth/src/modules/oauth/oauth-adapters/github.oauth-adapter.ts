@@ -2,13 +2,13 @@ import { httpClient } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { stringify } from 'qs';
-import { IOAuthProvider, AuthorizeOAuthResponse } from '../interfaces';
+import { OauthAdapter, AuthorizeOauthResponse } from '../interfaces';
 
 /**
- * GitHub OAuth Provider
+ * GitHub Oauth Adapter
  */
 @Injectable()
-export class GitHubOAuthProvider implements IOAuthProvider {
+export class GitHubOauthAdapter implements OauthAdapter {
   /**
    * Default Scopes
    */
@@ -17,22 +17,22 @@ export class GitHubOAuthProvider implements IOAuthProvider {
   /**
    * Constructor
    *
-   * @param {ConfigService} configService
+   * @param config
    */
-  constructor(private configService: ConfigService) {}
+  constructor(private config: ConfigService) {}
 
   /**
-   * Request OAuth
+   * Request Oauth
    *
-   * @param {string[]} scope
+   * @param scope
    * @returns
    */
-  requestOAuth(scope: string[] = []): string {
+  requestOauth(scope: string[] = []): string {
     return new URL(
       stringify(
         {
-          client_id: this.configService.get('oauth.github.clientId'),
-          redirect_uri: this.configService.get('oauth.github.redirectUri'),
+          client_id: this.config.get('oauth.github.clientId'),
+          redirect_uri: this.config.get('oauth.github.redirectUri'),
           scope: [...this.defaultScope, ...scope].join(' '),
           allow_signup: true,
         },
@@ -45,22 +45,20 @@ export class GitHubOAuthProvider implements IOAuthProvider {
   }
 
   /**
-   * Authorize OAuth
+   * Authorize Oauth
    *
-   * @param {string} code
+   * @param code
    * @returns
    */
-  async authorizeOAuth(code: string): Promise<AuthorizeOAuthResponse> {
+  async authorizeOauth(code: string): Promise<AuthorizeOauthResponse> {
     const ticket = await (
       await fetch(
         new URL(
           stringify(
             {
-              client_id: this.configService.get('oauth.google.clientId'),
-              client_secret: this.configService.get(
-                'oauth.google.clientSecret',
-              ),
-              redirect_uri: this.configService.get('oauth.google.redirectUri'),
+              client_id: this.config.get('oauth.google.clientId'),
+              client_secret: this.config.get('oauth.google.clientSecret'),
+              redirect_uri: this.config.get('oauth.google.redirectUri'),
               code,
             },
             { addQueryPrefix: true },
@@ -93,8 +91,8 @@ export class GitHubOAuthProvider implements IOAuthProvider {
     return [
       ticket,
       {
-        account: {
-          nickname: info.name,
+        profile: {
+          name: info.name,
         },
         email: {
           address: info.email,

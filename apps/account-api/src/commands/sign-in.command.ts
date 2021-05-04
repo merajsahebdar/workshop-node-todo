@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { ISignInInput } from '../interfaces';
+import { SignInInput } from '../inputs';
 
 /**
  * Sign In Command
@@ -8,7 +8,7 @@ export class SignInCommand implements ICommand {
   /**
    * Constructor
    *
-   * @param {ISignInInput} input
+   * @param input
    */
-  constructor(public readonly input: ISignInInput) {}
+  constructor(public readonly input: SignInInput) {}
 }

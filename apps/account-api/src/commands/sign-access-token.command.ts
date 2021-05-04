@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { UserEntity } from '../entities';
+import { User } from '@prisma/client';
 
 /**
  * Sign Access Token Command
@@ -8,7 +8,7 @@ export class SignAccessTokenCommand implements ICommand {
   /**
    * Constructor
    *
-   * @param {UserEntity} user
+   * @param user
    */
-  constructor(public readonly user: UserEntity) {}
+  constructor(public readonly user: User) {}
 }

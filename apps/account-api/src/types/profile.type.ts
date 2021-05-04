@@ -5,14 +5,14 @@ import {
   ID,
   ObjectType,
 } from '@nestjs/graphql';
-import { IAccountType } from '../interfaces';
+import { GraphProfileInterface } from '../interfaces';
 
 /**
- * Account Type
+ * Graph Profile
  */
-@ObjectType('Account')
+@ObjectType('Profile')
 @Directive('@key(fields: "id")')
-export class AccountType implements IAccountType {
+export class GraphProfile implements GraphProfileInterface {
   @Field(() => ID)
   id: string;
 
@@ -23,7 +23,7 @@ export class AccountType implements IAccountType {
   surname?: string;
 
   @Field({ nullable: true })
-  nickname?: string;
+  name?: string;
 
   @Field(() => GraphQLISODateTime)
   createdAt: string;
@@ -32,5 +32,5 @@ export class AccountType implements IAccountType {
   updatedAt: string;
 
   @Field(() => GraphQLISODateTime, { nullable: true })
-  removedAt: string;
+  deletedAt?: string;
 }

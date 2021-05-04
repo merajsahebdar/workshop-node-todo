@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// Account
+// -----------------------------------------------------------------------------
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  password      String?        @db.VarChar
+  isActivated   Boolean        @default(true) @map(name: "is_activated")
+  isBlocked     Boolean        @default(false) @map(name: "is_blocked")
+  createdAt     DateTime       @default(now()) @map(name: "created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @map(name: "updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime?      @map(name: "deleted_at") @db.Timestamptz(6)
+  profile       Profile?
+  emails        Email[]
+  oauthTickets  OauthTicket[]
+  refreshTokens RefreshToken[]
+
+  @@map(name: "users")
+}
+
+model Profile {
+  id        String    @id @default(uuid()) @db.Uuid
+  forename  String?   @db.VarChar
+  surname   String?   @db.VarChar
+  name      String?   @db.VarChar
+  createdAt DateTime  @default(now()) @map(name: "created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map(name: "updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map(name: "deleted_at") @db.Timestamptz(6)
+  userId    String    @unique @map(name: "user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map(name: "profiles")
+}
+
+model Email {
+  id         String    @id @default(uuid()) @db.Uuid
+  address    String    @db.VarChar
+  isPrimary  Boolean   @default(false) @map(name: "is_primary")
+  isVerified Boolean   @default(false) @map(name: "is_verified")
+  createdAt  DateTime  @default(now()) @map(name: "created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map(name: "updated_at") @db.Timestamptz(6)
+  deletedAt  DateTime? @map(name: "deleted_at") @db.Timestamptz(6)
+  userId     String    @map(name: "user_id") @db.Uuid
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@unique([address], name: "UQ_EMAIL__ADDRESS")
+  @@map(name: "emails")
+}
+
+model OauthTicket {
+  id                  String           @id @default(uuid()) @db.Uuid
+  adapterName         OauthAdapterName @map(name: "adapter_name")
+  encryptedTicketData Bytes            @map(name: "encrypted_ticket_data")
+  createdAt           DateTime         @default(now()) @map(name: "created_at") @db.Timestamptz(6)
+  updatedAt           DateTime         @updatedAt @map(name: "updated_at") @db.Timestamptz(6)
+  deletedAt           DateTime?        @map(name: "deleted_at") @db.Timestamptz(6)
+  userId              String           @map(name: "user_id") @db.Uuid
+  user                User             @relation(fields: [userId], references: [id])
+
+  @@unique([adapterName, userId], name: "UQ_OAUTH_TICKET__ADAPTER_NAME_USER")
+  @@map(name: "oauth_tickets")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userAgent String    @map(name: "user_agent") @db.VarChar
+  clientIp  String    @map(name: "client_ip") @db.VarChar
+  createdAt DateTime  @default(now()) @map(name: "created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map(name: "updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map(name: "deleted_at") @db.Timestamptz(6)
+  userId    String    @map(name: "user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@map(name: "refresh_tokens")
+}
+
+enum OauthAdapterName {
+  FACEBOOK
+  GITHUB
+  GOOGLE
+
+  @@map(name: "oauth_adapter_name")
+}
+
+// -----------------------------------------------------------------------------
+// Auth & Access Control
+// -----------------------------------------------------------------------------
+
+model CasbinRbacPolicy {
+  id        String    @id @default(uuid()) @db.Uuid
+  ptype     String?   @db.VarChar
+  v0        String?   @db.VarChar
+  v1        String?   @db.VarChar
+  v2        String?   @db.VarChar
+  v3        String?   @db.VarChar
+  v4        String?   @db.VarChar
+  v5        String?   @db.VarChar
+  createdAt DateTime  @default(now()) @map(name: "created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map(name: "updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map(name: "deleted_at") @db.Timestamptz(6)
+
+  @@map(name: "casbin_rbac_policies")
+}

@@ -2,13 +2,13 @@ import { httpClient } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { stringify } from 'qs';
-import { IOAuthProvider, AuthorizeOAuthResponse } from '../interfaces';
+import { OauthAdapter, AuthorizeOauthResponse } from '../interfaces';
 
 /**
- * Facebook OAuth Provider
+ * Facebook Oauth Adapter
  */
 @Injectable()
-export class FaceboookOAuthProvider implements IOAuthProvider {
+export class FaceboookOauthAdapter implements OauthAdapter {
   /**
    * Default Scopes
    */
@@ -17,22 +17,22 @@ export class FaceboookOAuthProvider implements IOAuthProvider {
   /**
    * Constructor
    *
-   * @param {ConfigService} configService
+   * @param config
    */
-  constructor(private configService: ConfigService) {}
+  constructor(private config: ConfigService) {}
 
   /**
-   * Request OAuth
+   * Request Oauth
    *
-   * @param {string[]} scope
+   * @param scope
    * @returns
    */
-  requestOAuth(scope: string[] = []): string {
+  requestOauth(scope: string[] = []): string {
     return new URL(
       stringify(
         {
-          client_id: this.configService.get('oauth.facebook.clientId'),
-          redirect_uri: this.configService.get('oauth.facebook.redirectUri'),
+          client_id: this.config.get('oauth.facebook.clientId'),
+          redirect_uri: this.config.get('oauth.facebook.redirectUri'),
           scope: [...this.defaultScope, ...scope].join(','),
           response_type: 'code',
           auth_type: 'rerequest',
@@ -47,24 +47,20 @@ export class FaceboookOAuthProvider implements IOAuthProvider {
   }
 
   /**
-   * Authorize OAuth
+   * Authorize Oauth
    *
-   * @param {string} code
+   * @param code
    * @returns
    */
-  async authorizeOAuth(code: string): Promise<AuthorizeOAuthResponse> {
+  async authorizeOauth(code: string): Promise<AuthorizeOauthResponse> {
     const ticket = await (
       await fetch(
         new URL(
           stringify(
             {
-              client_id: this.configService.get('oauth.facebook.clientId'),
-              client_secret: this.configService.get(
-                'oauth.facebook.clientSecret',
-              ),
-              redirect_uri: this.configService.get(
-                'oauth.facebook.redirectUri',
-              ),
+              client_id: this.config.get('oauth.facebook.clientId'),
+              client_secret: this.config.get('oauth.facebook.clientSecret'),
+              redirect_uri: this.config.get('oauth.facebook.redirectUri'),
               code,
             },
             { addQueryPrefix: true },
@@ -102,8 +98,8 @@ export class FaceboookOAuthProvider implements IOAuthProvider {
     return [
       ticket,
       {
-        account: {
-          nickname: `${info.first_name} ${info.last_name}`,
+        profile: {
+          name: `${info.first_name} ${info.last_name}`,
         },
         email: {
           address: info.email,

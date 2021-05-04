@@ -1,7 +1,10 @@
-import { IHttpRequest, JwtService, getRequest } from '@app/common';
+import {
+  IHttpRequest,
+  JwtService,
+  getRequest,
+  DatabaseService,
+} from '@app/common';
 import { ExecutionContext, Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
-import { Connection, ObjectLiteral, Repository } from 'typeorm';
 import { REQUEST_AUTHORIZE_PROPERTY_KEY } from '../contants';
 import { IAuthStrategy } from '../interfaces';
 
@@ -11,27 +14,17 @@ import { IAuthStrategy } from '../interfaces';
 @Injectable()
 export class JwtAuthStrategy implements IAuthStrategy {
   /**
-   * Users
-   */
-  private users: Repository<ObjectLiteral>;
-
-  /**
    * Constructor
    *
-   * @param {Connection} connection
-   * @param {JwtService} jwtService
+   * @param db
+   * @param jwt
    */
-  constructor(
-    @InjectConnection() private connection: Connection,
-    private jwtService: JwtService,
-  ) {
-    this.users = this.connection.getRepository('users');
-  }
+  constructor(private db: DatabaseService, private jwt: JwtService) {}
 
   /**
    * Authenticate
    *
-   * @param {ExecutionContext} context
+   * @param context
    * @returns
    */
   async authenticate(context: ExecutionContext): Promise<boolean> {
@@ -44,9 +37,9 @@ export class JwtAuthStrategy implements IAuthStrategy {
     const token = this.getToken(request);
 
     if (token) {
-      const { uid } = this.jwtService.verifyToken(token);
+      const { uid } = this.jwt.verifyToken(token);
 
-      const user = await this.users.findOne(uid);
+      const user = await this.db.user.findUnique({ where: { id: uid } });
       if (user) {
         request[REQUEST_AUTHORIZE_PROPERTY_KEY] = user;
 
@@ -60,8 +53,7 @@ export class JwtAuthStrategy implements IAuthStrategy {
   /**
    * Get authorization token from request headers.
    *
-   * @param {IHttpRequest} request
-   * @throws {AppInputError} in case of missing a valid authorization header.
+   * @param request
    * @returns
    */
   private getToken(request: IHttpRequest): string | null {

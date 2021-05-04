@@ -1,14 +1,14 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsEmail } from 'class-validator';
-import { ICheckEmailAvailabilityInput } from '../interfaces';
+import { CheckEmailAvailabilityInputInterface } from '../interfaces';
 
 /**
  * Check Email Availability Input
  */
 @InputType()
 export class CheckEmailAvailabilityInput
-  implements ICheckEmailAvailabilityInput {
+  implements CheckEmailAvailabilityInputInterface {
   @Field()
   @IsEmail(undefined, { message: 'The provided email address is not valid.' })
-  readonly email: string;
+  readonly address: string;
 }

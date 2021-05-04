@@ -1,7 +1,7 @@
+import { User } from '.prisma/client';
+import { AppInputError, DatabaseService } from '@app/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { IUserType } from '../interfaces';
 import { GetUserQuery } from '../queries';
-import { UserService } from '../services';
 
 /**
  * Get User Query Handler
@@ -11,16 +11,22 @@ export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
   /**
    * Constructor
    *
-   * @param {UserService} userService
+   * @param db
    */
-  constructor(private userService: UserService) {}
+  constructor(private db: DatabaseService) {}
 
   /**
    * Execute
    *
-   * @param {GetUserQuery} query
+   * @param query
    */
-  async execute(query: GetUserQuery): Promise<IUserType> {
-    return this.userService.findById(query.id);
+  async execute({ id }: GetUserQuery): Promise<User> {
+    const user = await this.db.user.findUnique({ where: { id } });
+
+    if (user) {
+      return user;
+    }
+
+    throw new AppInputError(`No user found with id: '${id}'.`);
   }
 }

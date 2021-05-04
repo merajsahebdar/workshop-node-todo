@@ -9,9 +9,9 @@ import { GqlValidationPipe, GqlAppInputErrorFilter } from '@app/common';
 import { UseFilters, UseGuards, UsePipes } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { EmailType, UserType, AccountType } from '../types';
+import { GraphUser, GraphProfile, GraphEmail } from '../types';
 import {
-  GetUserAccountQuery,
+  GetUserProfileQuery,
   GetUserEmailsQuery,
   GetUserQuery,
 } from '../queries';
@@ -20,7 +20,7 @@ import { UserArgs } from '../args';
 /**
  * User Resolver
  */
-@Resolver(() => UserType)
+@Resolver(() => GraphUser)
 @UsePipes(new GqlValidationPipe())
 @UseFilters(new GqlAppInputErrorFilter())
 export class UserResolver {
@@ -36,35 +36,35 @@ export class UserResolver {
   /**
    * Get the user by id.
    *
-   * @param {UserArgs} args
+   * @param args
    * @returns
    */
-  @Query(() => UserType, { name: 'user' })
+  @Query(() => GraphUser, { name: 'user' })
   @UseGuards(AuthGuard(JwtAuthStrategy), AcGuard(RbacStrategy))
   @UsePermissions(({ id }: UserArgs) => [`users:${id}`, 'read'])
-  async getUser(@Args() { id }: UserArgs): Promise<UserType> {
+  async getUser(@Args() { id }: UserArgs): Promise<GraphUser> {
     return this.queryBus.execute(new GetUserQuery(id));
   }
 
   /**
-   * User's Account
+   * User's Profile
    *
-   * @param {UserType} parent
+   * @param parent
    * @returns
    */
-  @ResolveField(() => AccountType, { name: 'account' })
-  async getAccount(@Parent() { id: userId }: UserType): Promise<AccountType> {
-    return this.queryBus.execute(new GetUserAccountQuery(userId));
+  @ResolveField(() => GraphProfile, { name: 'profile' })
+  async getProfile(@Parent() { id: userId }: GraphUser): Promise<GraphProfile> {
+    return this.queryBus.execute(new GetUserProfileQuery(userId));
   }
 
   /**
    * User's Emails
    *
-   * @param {UserType} parent
+   * @param parent
    * @returns
    */
-  @ResolveField(() => [EmailType], { name: 'emails' })
-  async getEmails(@Parent() { id: userId }: UserType): Promise<EmailType[]> {
+  @ResolveField(() => [GraphEmail], { name: 'emails' })
+  async getEmails(@Parent() { id: userId }: GraphUser): Promise<GraphEmail[]> {
     return this.queryBus.execute(new GetUserEmailsQuery(userId));
   }
 }

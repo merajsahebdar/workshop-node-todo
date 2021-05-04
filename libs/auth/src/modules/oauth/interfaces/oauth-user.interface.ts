@@ -1,9 +1,9 @@
 /**
- * OAuth User
+ * Oauth User
  */
-export interface IOAuthUser {
-  account: {
-    nickname: string;
+export interface OauthUser {
+  profile: {
+    name: string;
   };
   email: {
     address: string;

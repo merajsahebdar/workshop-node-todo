@@ -8,26 +8,21 @@ import {
   CommonModule,
   jwtConfig,
   redisConfig,
-  typeormConfig,
   commonConfig,
   createApolloLogger,
-  TypeOrmConnectionModule,
 } from '@app/common';
 import { MailingClientModule } from '@app/mailing-lib';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GraphQLFederationModule } from '@nestjs/graphql';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { appConfig } from './configs';
 import {
-  AccountEntity,
-  EmailEntity,
-  OAuthTicketEntity,
-  RefreshTokenEntity,
-  UserEntity,
-} from './entities';
-import { AuthResolver, EmailResolver, UserResolver } from './resolvers';
+  AuthResolver,
+  EmailResolver,
+  ProfileResolver,
+  UserResolver,
+} from './resolvers';
 import {
   VerifyEmailCommandHandler,
   GetUserQueryHandler,
@@ -37,20 +32,13 @@ import {
   SignUpCommandHandler,
   RegisterRefreshTokenCommandHandler,
   SendEmailVerificationMessageCommandHandler,
-  GetUserAccountQueryHandler,
+  GetUserProfileQueryHandler,
   GetUserEmailsQueryHandler,
+  RequestOauthCommandHandler,
+  AuthorizeOauthCommandHandler,
 } from './handlers';
 import { UserSaga } from './sagas';
-import {
-  AccountService,
-  AuthService,
-  EmailService,
-  OAuthTicketService,
-  RefreshTokenService,
-  UserService,
-} from './services';
-import { RequestOAuthCommandHandler } from './handlers/request-oauth.command.handler';
-import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command.handler';
+import { AuthService } from './services';
 
 /**
  * Account API Module
@@ -60,24 +48,9 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     // Third-party Modules
     // Configuration
     ConfigModule.forRoot({
-      load: [
-        appConfig,
-        commonConfig,
-        oauthConfig,
-        redisConfig,
-        typeormConfig,
-        jwtConfig,
-      ],
+      load: [appConfig, commonConfig, oauthConfig, redisConfig, jwtConfig],
       isGlobal: true,
     }),
-    // Database
-    TypeOrmModule.forFeature([
-      UserEntity,
-      EmailEntity,
-      OAuthTicketEntity,
-      RefreshTokenEntity,
-      AccountEntity,
-    ]),
     // GraphQL
     GraphQLFederationModule.forRootAsync({
       inject: [ConfigService],
@@ -100,28 +73,22 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     // App Modules
     CommonModule,
     AuthModule,
-    TypeOrmConnectionModule,
     CasbinManagementModule,
     OAuthModule,
     MailingClientModule,
   ],
   providers: [
     // Services
-    UserService,
-    AccountService,
-    EmailService,
-    OAuthTicketService,
-    RefreshTokenService,
     AuthService,
     // Handlers
     GetUserQueryHandler,
-    GetUserAccountQueryHandler,
+    GetUserProfileQueryHandler,
     GetUserEmailsQueryHandler,
     CheckEmailAvailabilityCommandHandler,
     SignInCommandHandler,
     SignUpCommandHandler,
-    RequestOAuthCommandHandler,
-    AuthorizeOAuthCommandHandler,
+    RequestOauthCommandHandler,
+    AuthorizeOauthCommandHandler,
     SignAccessTokenCommandHandler,
     SendEmailVerificationMessageCommandHandler,
     RegisterRefreshTokenCommandHandler,
@@ -131,6 +98,7 @@ import { AuthorizeOAuthCommandHandler } from './handlers/authorize-oauth.command
     // Resolvers
     UserResolver,
     EmailResolver,
+    ProfileResolver,
     AuthResolver,
   ],
 })

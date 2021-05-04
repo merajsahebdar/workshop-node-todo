@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { IVerifyEmailInput } from '../interfaces';
+import { VerifyEmailInput } from '../inputs';
 
 /**
  * Verify Email Command
@@ -8,7 +8,7 @@ export class VerifyEmailCommand implements ICommand {
   /**
    * Constructor
    *
-   * @param {IVerifyEmailInput} input
+   * @param input
    */
-  constructor(public readonly input: IVerifyEmailInput) {}
+  constructor(public readonly input: VerifyEmailInput) {}
 }

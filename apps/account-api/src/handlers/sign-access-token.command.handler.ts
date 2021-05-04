@@ -11,17 +11,17 @@ export class SignAccessTokenCommandHandler
   /**
    * Constructor
    *
-   * @param {AuthService} authService
+   * @param auth
    */
-  constructor(private authService: AuthService) {}
+  constructor(private auth: AuthService) {}
 
   /**
    * Execute
    *
-   * @param {SignAccessTokenCommand} command
+   * @param command
    * @returns
    */
   async execute({ user }: SignAccessTokenCommand): Promise<string> {
-    return this.authService.signAccessToken(user);
+    return this.auth.signAccessToken(user);
   }
 }

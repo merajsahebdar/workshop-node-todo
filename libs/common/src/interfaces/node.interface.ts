@@ -1,14 +1,9 @@
 /**
- * Node Type Interface
+ * Graph Node Interface
  */
-export interface INodeType {
+export interface GraphNodeInterface {
   id: string;
   createdAt: string;
   updatedAt: string;
-  removedAt?: string;
+  deletedAt?: string;
 }
-
-/**
- * Node Entity Interface
- */
-export type INodeEntity = INodeType;

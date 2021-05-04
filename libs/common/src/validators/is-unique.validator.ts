@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
   registerDecorator,
   ValidationArguments,
@@ -7,26 +6,26 @@ import {
   ValidatorConstraint,
   ValidationOptions,
 } from 'class-validator';
-import { Connection, EntitySchema, FindConditions, ObjectType } from 'typeorm';
+import { DatabaseService } from '../services';
 
-type IsUniqueConstraints<T> = [
-  ObjectType<T> | EntitySchema<T> | string,
-  ((validationArguments: ValidationArguments) => FindConditions<T>) | keyof T,
-];
+type IsUniqueConstraint = (
+  value: unknown,
+  db: DatabaseService,
+) => Promise<boolean>;
 
-interface IsUniqueValidationArguments<T> extends ValidationArguments {
-  constraints: IsUniqueConstraints<T>;
+interface IsUniqueValidationArguments extends ValidationArguments {
+  constraints: [IsUniqueConstraint];
 }
 
 /**
  * Match With Decorator
  *
- * @param {IsUniqueConstraints} constraints
- * @param {ValidationOptions} validationOptions
+ * @param constraint
+ * @param validationOptions
  * @returns
  */
-export function IsUnique<T = any>(
-  constraints: IsUniqueConstraints<T>,
+export function IsUnique(
+  constraint: IsUniqueConstraint,
   validationOptions?: ValidationOptions,
 ): PropertyDecorator {
   return (object: any, propertyName: string) => {
@@ -34,8 +33,8 @@ export function IsUnique<T = any>(
       target: object.constructor,
       propertyName,
       options: validationOptions,
-      constraints,
-      validator: IsUniqueConstraint,
+      constraints: [constraint],
+      validator: IsUniqueValidatorConstraint,
     });
   };
 }
@@ -45,38 +44,28 @@ export function IsUnique<T = any>(
  */
 @ValidatorConstraint({ name: 'isUnique', async: true })
 @Injectable()
-export class IsUniqueConstraint implements ValidatorConstraintInterface {
+export class IsUniqueValidatorConstraint
+  implements ValidatorConstraintInterface {
   /**
    * Constructor
    *
-   * @param {Connection} connection
+   * @param db
    */
-  constructor(@InjectConnection() private connection: Connection) {}
+  constructor(private db: DatabaseService) {}
 
   /**
    * @inheritdoc
    */
-  async validate<T>(value: string, args: IsUniqueValidationArguments<T>) {
-    const [EntityClass, findCondition = args.property] = args.constraints;
+  async validate(value: string, args: IsUniqueValidationArguments) {
+    const [validator] = args.constraints;
 
-    return (
-      (await this.connection.getRepository(EntityClass).count({
-        where:
-          typeof findCondition === 'function'
-            ? findCondition(args)
-            : {
-                [findCondition || args.property]: value,
-              },
-      })) <= 0
-    );
+    return validator(value, this.db);
   }
 
   /**
    * @inheritdoc
    */
   defaultMessage(args: ValidationArguments) {
-    const [EntityClass] = args.constraints;
-    const entity = EntityClass.name || 'Entity';
-    return `${entity} with the same '${args.property}' already exist`;
+    return `A resource with the same property: '${args.property}' already exist.`;
   }
 }

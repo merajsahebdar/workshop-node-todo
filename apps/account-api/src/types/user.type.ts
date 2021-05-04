@@ -5,21 +5,21 @@ import {
   ID,
   ObjectType,
 } from '@nestjs/graphql';
-import { IEmailType, IUserType } from '../interfaces';
-import { AccountType } from './account.type';
-import { EmailType } from './email.type';
+import { GraphUserInterface } from '../interfaces';
+import { GraphProfile } from './profile.type';
+import { GraphEmail } from './email.type';
 
 /**
- * User Type
+ * Graph User
  */
 @ObjectType('User')
 @Directive('@key(fields: "id")')
-export class UserType implements IUserType {
+export class GraphUser implements GraphUserInterface {
   @Field(() => ID)
   id: string;
 
-  @Field(() => [EmailType])
-  emails: IEmailType[];
+  @Field(() => [GraphEmail])
+  emails: GraphEmail[];
 
   @Field()
   isActivated: boolean;
@@ -27,11 +27,8 @@ export class UserType implements IUserType {
   @Field()
   isBlocked: boolean;
 
-  @Field(() => AccountType)
-  account: AccountType;
-
-  @Field()
-  isVerified: boolean;
+  @Field(() => GraphProfile)
+  profile: GraphProfile;
 
   @Field(() => GraphQLISODateTime)
   createdAt: string;
@@ -40,5 +37,5 @@ export class UserType implements IUserType {
   updatedAt: string;
 
   @Field(() => GraphQLISODateTime, { nullable: true })
-  removedAt?: string;
+  deletedAt?: string;
 }

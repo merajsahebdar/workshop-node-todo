@@ -1,27 +1,27 @@
-import { OAuthService } from '@app/auth';
+import { OauthService } from '@app/auth';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RequestOAuthCommand } from '../commands/request-oauth.command';
+import { RequestOauthCommand } from '../commands';
 
 /**
- * Request OAuth Command Handler
+ * Request Oauth Command Handler
  */
-@CommandHandler(RequestOAuthCommand)
-export class RequestOAuthCommandHandler
-  implements ICommandHandler<RequestOAuthCommand> {
+@CommandHandler(RequestOauthCommand)
+export class RequestOauthCommandHandler
+  implements ICommandHandler<RequestOauthCommand> {
   /**
    * Constructor
    *
-   * @param {OAuthService} oauthService
+   * @param oauth
    */
-  constructor(private oauthService: OAuthService) {}
+  constructor(private oauth: OauthService) {}
 
   /**
    * Execute
    *
-   * @param {RequestOAuthCommand} command
+   * @param command
    * @returns
    */
-  async execute(command: RequestOAuthCommand): Promise<string> {
-    return this.oauthService.requestOAuth(command.input.provider);
+  async execute({ input }: RequestOauthCommand): Promise<string> {
+    return this.oauth.requestOauth(input.adapterName);
   }
 }

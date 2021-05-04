@@ -6,12 +6,12 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLBoolean } from 'graphql';
 import { CheckEmailAvailabilityCommand, VerifyEmailCommand } from '../commands';
 import { CheckEmailAvailabilityInput, VerifyEmailInput } from '../inputs';
-import { EmailType } from '../types';
+import { GraphEmail } from '../types';
 
 /**
  * Email Resolver
  */
-@Resolver(() => EmailType)
+@Resolver(() => GraphEmail)
 @UsePipes(new GqlValidationPipe())
 @UseFilters(new GqlAppInputErrorFilter())
 export class EmailResolver {
