@@ -27,14 +27,6 @@ import { AccountApiModule } from './account-api.module';
   //  use services and providers in class validation.
   useContainer(app.select(AccountApiModule), { fallbackOnErrors: true });
 
-  const origin = configService.get('app.origin');
-  if (origin) {
-    app.enableCors({
-      credentials: true,
-      origin,
-    });
-  }
-
   // Run!
   await app.listen(configService.get('app.port', 3000));
 })();

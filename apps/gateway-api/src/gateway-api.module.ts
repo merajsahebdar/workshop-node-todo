@@ -25,6 +25,7 @@ import { BuildServiceModule } from './modules';
           configService.get('common.env', 'development') === 'development';
 
         const serviceList = configService.get('app.serviceList');
+        const origin = configService.get('app.origin');
 
         return {
           gateway: {
@@ -40,6 +41,12 @@ import { BuildServiceModule } from './modules';
             autoSchemaFile: true,
             tracing: isDevelopment,
             context: ({ req, res }) => ({ req, res }),
+            cors: origin
+              ? {
+                  credentials: true,
+                  origin: origin.split(/,\s?/),
+                }
+              : false,
           },
         };
       },

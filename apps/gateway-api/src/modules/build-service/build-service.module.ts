@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GATEWAY_BUILD_SERVICE } from '@nestjs/graphql';
-import { AuthenticatedDataSource } from './data-sources';
+import { HeadersDataSource } from './data-sources';
 
 /**
  * Build Service Module
@@ -8,15 +8,15 @@ import { AuthenticatedDataSource } from './data-sources';
 @Module({
   providers: [
     {
-      provide: AuthenticatedDataSource,
-      useValue: AuthenticatedDataSource,
+      provide: HeadersDataSource,
+      useValue: HeadersDataSource,
     },
     {
       provide: GATEWAY_BUILD_SERVICE,
-      useFactory: (AuthenticatedDataSource) => {
-        return ({ url }) => new AuthenticatedDataSource({ url });
+      useFactory: (HeadersDataSource) => {
+        return ({ url }) => new HeadersDataSource({ url });
       },
-      inject: [AuthenticatedDataSource],
+      inject: [HeadersDataSource],
     },
   ],
   exports: [GATEWAY_BUILD_SERVICE],
