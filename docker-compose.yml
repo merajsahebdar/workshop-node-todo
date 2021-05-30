@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  # PostgreSQL
+  postgres:
+    container_name: shanbe-postgres
+    image: postgres:13
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      - type: volume
+        source: postgres
+        target: /var/lib/postgresql/data/pgdata
+  # Redis
+  redis:
+    container_name: shanbe-redis
+    image: redis:5
+    ports:
+      - 6379:6379
+
+networks:
+  default:
+    name: shanbe
+
+volumes:
+  # PostgreSQL Data
+  postgres:
+    name: shanbe-postgres
+
+# vim: set ts=2 sw=2 ft=yaml et:
