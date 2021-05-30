@@ -1,7 +1,8 @@
 # Local
 /dist
 /node_modules
-/vars
+/var
+/log
 
 .env
 .env.*

@@ -12,8 +12,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
-    "lint": "eslint \"apps/**/*.{ts,js}\" \"libs/**/*.ts\" --fix --cache"
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" --fix --cache"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
@@ -30,7 +30,7 @@
       "json",
       "ts"
     ],
-    "rootDir": ".",
+    "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -38,20 +38,8 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "./coverage",
-    "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/apps/",
-      "<rootDir>/libs/"
-    ],
-    "moduleNameMapper": {
-      "@app/common/(.*)": "<rootDir>/libs/common/src/$1",
-      "@app/common": "<rootDir>/libs/common/src",
-      "@app/auth/(.*)": "<rootDir>/libs/auth/src/$1",
-      "@app/auth": "<rootDir>/libs/auth/src",
-      "@app/mailing-lib/(.*)": "<rootDir>/libs/mailing-lib/src/$1",
-      "@app/mailing-lib": "<rootDir>/libs/mailing-lib/src"
-    }
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   },
   "dependencies": {
     "@apollo/gateway": "^0.26.1",
@@ -65,7 +53,7 @@
     "@nestjs/microservices": "^7.6.15",
     "@nestjs/platform-express": "^7.6.13",
     "@nestjs/typeorm": "^7.1.5",
-    "@prisma/client": "2.21.2",
+    "@prisma/client": "^2.23.0",
     "apollo-server-errors": "^2.4.2",
     "apollo-server-express": "^2.22.2",
     "bcryptjs": "^2.4.3",

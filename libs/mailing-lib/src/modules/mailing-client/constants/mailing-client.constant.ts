@@ -1,1 +1,0 @@
-export const MAILING_CLIENT = 'MAILING_CLIENT';

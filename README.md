@@ -28,9 +28,8 @@ _A Backend Boilerplate built on top of NestJS._
 | :----------------------------------- | :------------------------------------------------- |
 | `APP_KEY`                            | A strong and safe key to use as hash salt          |
 | `APP_SIGNED_REQUEST_EXPIRES`         | The expiration time in minutes for signed requests |
-| `ACCOUNT_API_PORT`                   | The port number to start the Account API on it     |
-| `ACCOUNT_API_EMAIL_VERIFICATION_URL` | The URL for user verification                      |
-| `GATEWAY_API_PORT`                   | The port number to start the Gateway API on it     |
+| `APP_PORT`                           | The port number to start the Account API on it     |
+| `ACCOUNT_EMAIL_VERIFICATION_URL`     | The URL for user verification                      |
 | `JWT_PUBLIC_KEY`                     | Path to a public key to use as jwt signature       |
 | `JWT_PRIVATE_KEY`                    | Path to a private key to use as jwt signature      |
 | `JWT_PRiVATE_KEY_PASSPHRASE`         | The passphrase belongs to the jwt private key      |
